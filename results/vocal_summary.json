@@ -1,0 +1,652 @@
+{
+ "vocal": {
+  "claude": {
+   "n": 10,
+   "correct": 6,
+   "brier": 0.251,
+   "auroc": 0.4,
+   "items": [
+    {
+     "pair": "1",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "No ID3 tags or comments. The only string is the LAME 3.100 encoder tag, which both AI and human files commonly",
+      "The file is 16 kHz mono 64 kbps CBR, which looks like a uniform preprocessing step and says nothing about how ",
+      "Loudness is very steady (30 s with a loudness range of 0.8 LU, per-second level within a few dB), which is sli",
+      "I could not listen to the audio, and my code analysis gave no reliable cues for genre, vocals or structure",
+      "I did not recognise the track"
+     ]
+    },
+    {
+     "pair": "1",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "HUMAN",
+     "confidence": 52,
+     "p_ai": 0.48,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "No ID3 or other tags, and no generator or platform strings. The only encoder string is LAME3.100, which is a g",
+      "The file is a 30 s, 16 kHz mono, 64 kbps CBR MP3. That looks like a uniform preprocessing step for the evaluat",
+      "The 7.2 kHz cutoff comes from the 16 kHz resample and encoder lowpass, so it can't reveal the original source.",
+      "I couldn't listen to the audio. My tempo and key estimates were ambiguous, so I have no musical-content eviden",
+      "Loudness is steady at -16.5 LUFS with a 1.2 LU range. That is consistent with either a human or an AI track, s"
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "ai",
+     "source": "fake_53263_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "I could not listen to the audio, so there is no musical-content judgement",
+      "File is a 16 kHz mono 64 kbps MP3 encoded with LAME 3.100, which looks like a re-encoded excerpt and says litt",
+      "No ID3 tags or comments, so there is no metadata for or against",
+      "Loudness is steady at about -16 LUFS with a narrow range of 1.9 LU, which is weak evidence of a generated or h",
+      "Spectral cutoff at about 7.3 kHz matches the low-pass filter of the downsampling, so it tells me nothing about"
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "human",
+     "source": "h11.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": false,
+     "basis": "nothing usable",
+     "evidence": [
+      "No usable provenance in the file: no ID3 tags, only the generic LAME3.100 encoder string.",
+      "Mono, 16 kHz, 64 kbps CBR, 30.1 s: looks like a standardized preprocessed excerpt, so these properties say not",
+      "Very narrow loudness range (1.7 LU) at -16.2 LUFS, which is consistent with heavy processing but not specific ",
+      "I could not listen to the audio, so I have no direct evidence from vocals, instrument realism or structure.",
+      "The weak lean toward AI is a prior only, from the chroma-based key estimate (C minor) and the bass-heavy spect"
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "ai",
+     "source": "fake_53742_suno_1.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "I can't hear audio, so I have no musical-content evidence",
+      "File is a 30 s, 16 kHz mono, 64 kbps MP3 with no tags, which looks like a preprocessed evaluation clip and say",
+      "Spectrum cuts off near 7.3 kHz, just below the 8 kHz Nyquist limit, so the downsampling hides any generator ar",
+      "Tempo and key analysis were ambiguous (about 75 or 150 BPM | A minor or C major) and show nothing diagnostic",
+      "The AI verdict is essentially a coin flip | I did not recognise the track"
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "human",
+     "source": "h12.mp3",
+     "verdict": "AI",
+     "confidence": 55,
+     "p_ai": 0.55,
+     "correct": false,
+     "basis": "technical properties",
+     "evidence": [
+      "I could not listen to the audio, so there is no judgement of the music itself.",
+      "The file is a uniform 16 kHz mono 64 kbps LAME 3.100 MP3 with no tags. That points to dataset preprocessing an",
+      "Loudness is very steady: loudness range 1.4 LU, with per-second level within about 5 dB across the 30 s. This ",
+      "Tempo (about 78 BPM) and key estimates were ambiguous and not informative."
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "ai",
+     "source": "fake_53772_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "I could not listen to the audio, so there is no musical-content judgement behind this verdict.",
+      "The only embedded metadata is a LAME3.100 encoder string, with no ID3 tags, artist or title. This is typical o",
+      "The file is 16 kHz mono 64 kbps with a hard lowpass near 7 kHz. That looks like a pipeline-standardised excerp",
+      "The key (C# major) and tempo (about 134 BPM) estimates are low-confidence and prove nothing."
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "human",
+     "source": "h16.mp3",
+     "verdict": "AI",
+     "confidence": 53,
+     "p_ai": 0.53,
+     "correct": false,
+     "basis": "nothing usable",
+     "evidence": [
+      "No ID3 tags or comments | the only metadata is the LAME3.100 encoder string, which looks like dataset preproce",
+      "Format (30 s, 16 kHz mono, 64 kbps CBR, spectrum cut off near 7.3 kHz) is a uniform conversion that would hide",
+      "Very steady loudness (LRA 1.9 LU, RMS roughly 0.13-0.20 throughout) with no clear section changes, weakly cons",
+      "I could not listen to the file, and key and tempo estimates were low-confidence, so there is no musical-conten",
+      "The verdict is close to a coin flip, leaning AI only on the flat dynamics"
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "ai",
+     "source": "fake_53651_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": true,
+     "basis": "nothing usable",
+     "evidence": [
+      "I could not listen to the audio, so I have no musical-content evidence.",
+      "The only metadata is a LAME 3.100 encoder tag, which both AI-generation pipelines and ordinary human workflows",
+      "The 16 kHz mono, 64 kbps MP3 with a hard 7 kHz low-pass is probably a preprocessing step and says nothing abou",
+      "Loudness is very steady (LRA 1.6 LU, about -16.7 LUFS), which is slightly more typical of generated or heavily",
+      "I did not recognise the track."
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "human",
+     "source": "h20.mp3",
+     "verdict": "AI",
+     "confidence": 52,
+     "p_ai": 0.52,
+     "correct": false,
+     "basis": "nothing usable",
+     "evidence": [
+      "I could not listen to the audio, so there is no musical-content judgement",
+      "The file is a 30 s, 16 kHz mono, 64 kbps CBR MP3 with a LAME 3.100 header and no tags. This looks like a proce",
+      "The loudness is steady, with an LRA of 2.3 LU and a 2-second RMS of 0.10-0.20 across the clip, but that does n",
+      "The spectrum cutoff at about 7.4 kHz comes from the MP3 encoding and says nothing about the source",
+      "The verdict is essentially a coin flip"
+     ]
+    }
+   ]
+  },
+  "chatgpt": {
+   "n": 10,
+   "correct": 5,
+   "brier": 0.247,
+   "auroc": 0.72,
+   "items": [
+    {
+     "pair": "1",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 58,
+     "p_ai": 0.58,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The instrumental passage has a repetitive melodic and rhythmic pattern with limited apparent development.",
+      "The plucked or string-like tones have a relatively uniform timbre across the excerpt.",
+      "The musical texture sounds consistent, with limited clearly audible variation in performance dynamics.",
+      "The short excerpt provides insufficient context to assess longer-form musical development or production choice",
+      "The MP3 is mono at 16 kHz and 64 kbps, but these properties are not reliable evidence of AI generation."
+     ]
+    },
+    {
+     "pair": "1",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "HUMAN",
+     "confidence": 56,
+     "p_ai": 0.43999999999999995,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The clip is dominated by a single spoken-sounding voice, with no clearly identifiable musical accompaniment.",
+      "The voice sounds low-pitched and somewhat muffled, but this alone does not reliably distinguish human from AI ",
+      "The recording is mono at 16 kHz and encoded as 64 kbps MP3, consistent with speech-oriented audio processing b",
+      "No embedded metadata or encoder tags identifying a generation model were found.",
+      "The short, voice-dominant excerpt provides insufficient evidence for a confident determination of provenance."
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "ai",
+     "source": "fake_53263_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 60,
+     "p_ai": 0.6,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The instrumental arrangement is highly repetitive, with a loop-like motif and little clearly defined sectional",
+      "The timbres have a polished, somewhat generic electronic background-music character, which is compatible with ",
+      "The rhythmic pulse and melodic accompaniment appear relatively consistent throughout the short excerpt.",
+      "The clip has no clearly audible vocal performance, so vocal artifacts cannot help distinguish its origin.",
+      "The file contains no useful embedded metadata identifying its production method | its low-bitrate mono MP3 enc"
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "human",
+     "source": "h11.mp3",
+     "verdict": "AI",
+     "confidence": 55,
+     "p_ai": 0.55,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The excerpt appears to maintain a repetitive musical texture with relatively little large-scale structural dev",
+      "The estimated tempo is approximately 117 BPM, consistent with a regular electronic rhythmic pattern.",
+      "The available signal analysis does not establish whether the sounds were generated or performed by humans.",
+      "The file contains no embedded metadata identifying a music-generation system or production origin.",
+      "The short excerpt and limited evidence make the distinction between a generated track and a human-produced ele"
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "ai",
+     "source": "fake_53742_suno_1.mp3",
+     "verdict": "AI",
+     "confidence": 58,
+     "p_ai": 0.58,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The instrumental groove sounds repetitive, with a relatively consistent arrangement throughout the short excer",
+      "The melodic and rhythmic layers appear to maintain a similar pattern without a clearly pronounced structural d",
+      "The electronic timbres and polished, loop-oriented presentation are compatible with AI-generated instrumental ",
+      "The short excerpt provides limited evidence about performance nuance, compositional intent, or longer-term mus",
+      "The MP3 format, mono channel configuration, and 16 kHz sample rate do not independently establish whether the "
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "human",
+     "source": "h12.mp3",
+     "verdict": "AI",
+     "confidence": 56,
+     "p_ai": 0.56,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The musical texture remains relatively consistent throughout the approximately 30-second excerpt, with limited",
+      "The repeating melodic motif and smooth, layered tonal textures are compatible with AI-generated ambient or ele",
+      "The plucked, string-like tones and sustained background layers have a synthesized or processed quality, althou",
+      "The passage has relatively steady overall dynamics, with no clearly audible vocal performance or conspicuous i",
+      "None of these characteristics uniquely identifies AI generation | the short excerpt provides insufficient evid"
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "ai",
+     "source": "fake_53772_suno_0.mp3",
+     "verdict": "HUMAN",
+     "confidence": 55,
+     "p_ai": 0.44999999999999996,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The available description suggests a voice-dominant, speech-like recording rather than a clearly identifiable ",
+      "No specific AI-generation artifacts can be established from the available evidence.",
+      "There is insufficient evidence to identify a musical genre, arrangement, or generated-song structure."
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "human",
+     "source": "h16.mp3",
+     "verdict": "AI",
+     "confidence": 56,
+     "p_ai": 0.56,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The short excerpt has a highly repetitive, relatively uniform instrumental texture with limited obvious develo",
+      "The tonal sounds have a clean, synthetic, plucked or bell-like character, with a steady low-frequency pulse.",
+      "The arrangement appears consistent throughout the excerpt, without clearly distinguishable sections or conspic",
+      "No vocals or clearly identifiable acoustic instruments are apparent.",
+      "The file contains no embedded metadata identifying its creator or production method | its 16 kHz mono, 64 kbps"
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "ai",
+     "source": "fake_53651_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 56,
+     "p_ai": 0.56,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The short instrumental passage appears to repeat a similar plucked-string melodic motif with limited structura",
+      "The bright, guitar-like timbre is consistent throughout, though this alone does not distinguish AI generation ",
+      "The rhythmic accompaniment sounds relatively consistent across the excerpt.",
+      "No clearly audible vocals or distinctive human performance cues can be established with sufficient certainty f",
+      "The file's technical properties do not provide reliable evidence of AI generation | the MP3 encoding and mono "
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "human",
+     "source": "h20.mp3",
+     "verdict": "AI",
+     "confidence": 58,
+     "p_ai": 0.58,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The short instrumental excerpt has a repeating melodic motif with a consistent electronic timbre.",
+      "The rhythmic pulse and note spacing are relatively regular throughout the excerpt.",
+      "The arrangement appears to maintain a similar texture with limited clearly distinguishable structural developm",
+      "No vocals or obvious human-performance artifacts are identifiable from the available analysis.",
+      "No embedded metadata was found to establish whether the recording was AI-generated or human-made | the technic"
+     ]
+    }
+   ]
+  },
+  "gemini": {
+   "n": 10,
+   "correct": 7,
+   "brier": 0.206,
+   "auroc": 1.0,
+   "items": [
+    {
+     "pair": "1",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 98,
+     "p_ai": 0.98,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Typical diffusion transformer vocoder phase artifacts and metallic smear across the vocal top-end",
+      "Unnatural vocal timbre and robotic, inconsistent pronunciation transitions characteristic of Suno/Udio",
+      "Self-referential generative AI lyrics (about a 'digital dance' and 'random seeds')",
+      "Blurry, phase-cancelled stereo drum transients lacking clean multi-track separation",
+      "Abrupt shift in vocal character and register at 0:17 without organic acoustic context"
+     ]
+    },
+    {
+     "pair": "1",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "AI",
+     "confidence": 85,
+     "p_ai": 0.85,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "Typical diffusion neural codec phase artifacts and subtle watery smearing in the high frequencies",
+      "Slight unnatural timbral morphing and synthetic metallic resonance in the vocal transients",
+      "The melodic and lyrical phrasing exhibits classic Suno/Udio generative style tropes",
+      "Backing elements lack clean separation and display characteristic spectral blurring between the bass and synth"
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "ai",
+     "source": "fake_53263_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 92,
+     "p_ai": 0.92,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Characteristic phasey, watery diffusion artifacts in the vocal timbre and upper harmonics",
+      "Synthetic, slightly unnatural phrasing and inflection typical of Suno/Udio vocal models",
+      "Smearing and lack of clean transient separation between the percussion and backing synth textures",
+      "Abstract, prompt-like lyrical phrasing (quotes AI-themed lyrics)",
+      "Stereo field and reverb tails exhibit noticeable generative encoding artifacts rather than natural studio reve"
+     ]
+    },
+    {
+     "pair": "2",
+     "label": "human",
+     "source": "h11.mp3",
+     "verdict": "HUMAN",
+     "confidence": 88,
+     "p_ai": 0.12,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Clean, crisp transient definition in the drums and hi-hats with no spectral smearing, phase flanging, or diffu",
+      "Very natural, un-quantized human funk pocket and micro-timing in the bassline and rhythm guitar licks.",
+      "The spoken vocal sample has distinct acoustic room tone, microphone proximity, and natural sibilance character",
+      "Mix elements have clear spatial separation, distinct stereo panning, and dynamic headroom typical of standard "
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "ai",
+     "source": "fake_53742_suno_1.mp3",
+     "verdict": "AI",
+     "confidence": 92,
+     "p_ai": 0.92,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Typical Suno/Udio vocal timbre with metallic, phasey high-frequency texture and indistinct formant smearing",
+      "Slightly garbled/slurred enunciation at phrase ends and word transitions characteristic of neural vocoders",
+      "Artificial stereo-field coherence where reverbs, backing pads, and vocal breath bleed into a single blended la",
+      "Hallmark generative songwriting tropes: overt, generic lyrics (about a landmark) paired with s"
+     ]
+    },
+    {
+     "pair": "3",
+     "label": "human",
+     "source": "h12.mp3",
+     "verdict": "AI",
+     "confidence": 85,
+     "p_ai": 0.85,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "Metallic timbre, spectral smearing, and phase-like diffusion typical of diffusion-based neural audio synthesis",
+      "Vocal delivery displays subtle unnatural formant transitions and synthetic compression artifacts on fricatives",
+      "Backing beat and percussion lack standard multi-track separation clarity, showing micro-artifacts of full-mix ",
+      "Stereo imaging has faint non-standard phase artifacts and smearing across synthetic high-frequency elements"
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "ai",
+     "source": "fake_53772_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 93,
+     "p_ai": 0.93,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Typical diffusion neural audio artifacts in high frequencies, especially smeared cymbals and unnatural guitar ",
+      "Synthetic, phasey vocal timbre with subtle formant warping characteristic of models like Suno v3/v3.5",
+      "Slightly inconsistent stereo field separation where choir and backing elements blur unnaturally into the instr",
+      "Generic lyrical tropes (quotes lyrics; names an anime theme) rendered in a textbook AI-g",
+      "Artificial vocal transition dynamics between spoken-melodic verses and belted choruses"
+     ]
+    },
+    {
+     "pair": "4",
+     "label": "human",
+     "source": "h16.mp3",
+     "verdict": "HUMAN",
+     "confidence": 88,
+     "p_ai": 0.12,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Clean, natural female vocal timbre without typical diffusion neural phase smearing or watery artifacts",
+      "Coherent, vintage late-1980s synth-pop instrumentation with authentic hardware drum machine sounds and gating",
+      "Precise human vocal phrasing, breath dynamics, and distinct non-synthetic formant transitions",
+      "Acoustic coherence between dry elements and vintage plate hall reverb tails absent of AI generative mush"
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "ai",
+     "source": "fake_53651_udio_1.mp3",
+     "verdict": "AI",
+     "confidence": 92,
+     "p_ai": 0.92,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Characteristic phasey, diffused high-frequency artifacts and watery vocal sheen typical of neural audio synthe",
+      "Extremely generic, literal, novelty lyrics directly rhyming movie titles",
+      "Unnatural separation and smearing between the vocal track and the synth backing",
+      "Synthetic, overly quantized drum timbres with synthetic compression artifacts lacking natural acoustic or clea"
+     ]
+    },
+    {
+     "pair": "5",
+     "label": "human",
+     "source": "h20.mp3",
+     "verdict": "AI",
+     "confidence": 75,
+     "p_ai": 0.75,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "Slight unnatural timbral smearing and phasey quality in the upper frequencies, typical of neural audio codecs",
+      "Melodic phrasing and synthetic vocal transitions have subtle artifacts characteristic of AI generation models ",
+      "Stereo imaging exhibits minor diffuse, unstable phase behavior common in full-mix generative models"
+     ]
+    }
+   ]
+  }
+ },
+ "freq": {
+  "claude": {
+   "n": 2,
+   "correct": 1,
+   "brier": 0.244,
+   "auroc": 1.0,
+   "items": [
+    {
+     "pair": "",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 57,
+     "p_ai": 0.57,
+     "correct": true,
+     "basis": "technical properties",
+     "evidence": [
+      "Spectral energy stops at about 8 kHz and falls to the noise floor by about 10 kHz, despite a 192 kbps, 44.1 kHz",
+      "Loudness range is only 0.8 LU, and 2-second RMS stays nearly constant (0.115 to 0.141) for about 28 s. That po",
+      "The file has no ID3 tags, only the LAME 3.100 encoder string, so it has been re-encoded and stripped of metada",
+      "I could not listen to the audio, so I have no musical-content evidence such as vocal artefacts, structure or t"
+     ]
+    },
+    {
+     "pair": "",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "AI",
+     "confidence": 55,
+     "p_ai": 0.55,
+     "correct": false,
+     "basis": "technical properties",
+     "evidence": [
+      "I did not listen to the audio. Only code analysis was possible, so musical content such as vocal artifacts and",
+      "Hard lowpass at about 15.7 kHz with nothing above it. This is typical of a lossy-compressed source, which is c",
+      "Very steady loudness (LRA 1.1 LU, 2-second RMS within about 1.5 dB) and a stable key and tempo over the 30 s c",
+      "No ID3 tags, comments or distinguishing encoder strings beyond 'LAME3.100'. The file has been stripped of meta",
+      "Nearly mono stereo image (L/R correlation 0.89). This is inconclusive."
+     ]
+    }
+   ]
+  },
+  "chatgpt": {
+   "n": 2,
+   "correct": 1,
+   "brier": 0.256,
+   "auroc": 0.5,
+   "items": [
+    {
+     "pair": "",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 58,
+     "p_ai": 0.58,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "The short excerpt presents a polished, repetitive electronic motif with relatively little obvious development.",
+      "The melodic phrasing and supporting textures sound highly uniform, with limited audible variation across the e",
+      "The plucked synth tones and atmospheric backing form a coherent but somewhat generic electronic soundscape.",
+      "The excerpt does not provide enough distinctive performance detail to confidently establish whether it was gen",
+      "The available file metadata identifies a standard stereo MP3 encoding but contains no clear evidence of AI gen"
+     ]
+    },
+    {
+     "pair": "",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "AI",
+     "confidence": 58,
+     "p_ai": 0.58,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "The instrumental passage appears to maintain a highly consistent rhythmic groove throughout the excerpt.",
+      "The melodic material appears repetitive, with no clearly distinguishable large-scale structural transition.",
+      "The described combination of bright plucked or synthesized tones, bass, and percussion is compatible with AI-g",
+      "The short excerpt provides limited evidence about natural performance variation, arrangement development, or i",
+      "The MP3 technical properties and lack of embedded metadata do not reliably distinguish AI-generated music from"
+     ]
+    }
+   ]
+  },
+  "gemini": {
+   "n": 2,
+   "correct": 1,
+   "brier": 0.39,
+   "auroc": 1.0,
+   "items": [
+    {
+     "pair": "",
+     "label": "ai",
+     "source": "fake_54122_suno_0.mp3",
+     "verdict": "AI",
+     "confidence": 92,
+     "p_ai": 0.92,
+     "correct": true,
+     "basis": "musical content",
+     "evidence": [
+      "Typical text-to-music generation artifacts including metallic, watery phase smearing across vocal formants and",
+      "Self-referential AI-themed lyrics (quotes lyrics about a digital dance)",
+      "Sudden, unprompted timbre and vocal shift into a low spoken-word line without acoustic space continuity",
+      "Compressed, diffuse percussion transients characteristic of latent diffusion / spectrogram-based generative mo"
+     ]
+    },
+    {
+     "pair": "",
+     "label": "human",
+     "source": "h03.mp3",
+     "verdict": "AI",
+     "confidence": 88,
+     "p_ai": 0.88,
+     "correct": false,
+     "basis": "musical content",
+     "evidence": [
+      "Characteristic metallic, phasey smearing in the upper frequencies of the vocal track",
+      "Slight unnatural timbral morphing and breath micro-artifacts typical of Suno/Udio vocal models",
+      "Synthetic drum transients and acoustic guitar strums lack discrete acoustic separation",
+      "Vocal phrasing exhibits slight rhythmic quantization warping around melismatic sustains",
+      "Mix elements exhibit holistic diffusion-style spectral bleeding rather than multi-track isolation"
+     ]
+    }
+   ]
+  }
+ }
+}

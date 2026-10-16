@@ -48,14 +48,14 @@ a{color:var(--accent)}
 
 <div class="status">
 <b>Where we are.</b> The pilot (12 Oct) tested only the hardest condition, and every model was at chance. Run 2 starts from the easiest condition, the untouched file, and removes giveaways step by step.
-<b>Run 2 is complete for three levels: 90 chats</b> (3 levels × 3 models × 10 tracks, two turns each). Levels L1 and L3 are designed but not run yet.
+<b>Run 2 is complete for three levels: 90 chats</b> (3 levels × 3 models × 10 tracks, two turns each). <b>Round 3</b> (17 Oct) added 30 chats on vocal songs from older generators, plus a 6-chat frequency test. Levels L1 and L3 are parked.
 </div>
 
 <div class="kpis">
 <div class="kpi"><b class="good">10 / 10</b><span>ChatGPT and Claude on raw files. Both read the "made with suno" tag with code</span></div>
 <div class="kpi"><b class="bad">4–7 / 10</b><span>every model once tags are gone (L2 and L4). Chance is 5</span></div>
 <div class="kpi"><b class="warn">6 / 10</b><span>Gemini at every level. It listens, but calls most tracks human</span></div>
-<div class="kpi"><b>0</b><span>models that detect AI music from the sound alone</span></div>
+<div class="kpi"><b class="good">5 / 5</b><span>older-generator AI vocal songs Gemini caught, ranking every AI song above every human one. It may be reading the AI-written lyrics</span></div>
 </div>
 
 <h2>1. The question</h2>
@@ -147,7 +147,33 @@ Turn 2: {"verdict": "HUMAN", "confidence": 88,
 </table></div>
 <p>Describing the file first did not make any model better at detection.</p>
 
-<h2>5. Time, tokens and cost</h2>
+<h2>5. Round 3: vocal tracks from older generators</h2>
+<p>Run 2 suggested vocals are where AI is audible: the only Suno track Gemini caught was a vocal one. So this round swaps in AI songs that should be <i>easier</i> to spot: 5 fully generated vocal songs (music and lyrics) from the <b>SONICS</b> dataset (2024, Suno v3.5 and Udio), each paired by style with a human Creative Commons vocal track (house-pop, club, R&amp;B, synthpop, dubstep).</p>
+<p><b>Same quality for every file.</b> SONICS only ships 16 kHz mono audio, so all 10 files were brought to the same format. The human tracks also went through one low-bitrate MP3 pass to match the AI files' compression damage. Then all 10 were cut to 30 s clips at 16 kHz mono, 64 kbps, −16 LUFS, with no fades and no low-pass. The format is therefore identical, and only the music differs.</p>
+<div class="tw"><table>
+<tr><th>Model</th><th>Correct</th><th>AI caught</th><th>Human called AI</th><th>Brier ↓</th><th>AUROC</th><th>Confidence</th><th>Heard vocals (Turn 1)</th></tr>
+<tr><td>Gemini</td><td class="n good">7 / 10</td><td class="n good">5 / 5</td><td class="n bad">3 / 5</td><td class="n">0.206</td><td class="n good">1.00</td><td class="n">75–98%</td><td class="n">10 / 10</td></tr>
+<tr><td>Claude</td><td class="n warn">6 / 10</td><td class="n">5 / 5</td><td class="n bad">4 / 5</td><td class="n">0.251</td><td class="n">0.40</td><td class="n">52–55%</td><td class="n">"unsure" 10 / 10</td></tr>
+<tr><td>ChatGPT</td><td class="n warn">5 / 10</td><td class="n">4 / 5</td><td class="n bad">4 / 5</td><td class="n">0.247</td><td class="n">0.72</td><td class="n">55–60%</td><td class="n bad">2 / 10</td></tr>
+</table></div>
+<ul>
+<li><b>Gemini is the first model in this study to show a real signal.</b> Every AI song got a higher "AI" probability (92–98%) than every human song (12–85%), so AUROC is 1.00. A cut-off at about 90% would have separated all 10 correctly. At its own 50% cut-off, though, it still called 3 of 5 human songs AI at 75–85%.</li>
+<li><b>But it may be reading the lyrics, not hearing artefacts.</b> In all 5 of its AI calls Gemini cited the lyrics, and SONICS' fully generated songs have AI-written lyrics that are often about AI itself ("digital dance", "random seeds", "transformer"). It also cited audio artefacts ("metallic smearing", "formant warping"), but it used the same phrases on human songs it called AI, so those phrases don't distinguish anything. With instrumental Suno tracks in run 2 it was at chance.</li>
+<li><b>ChatGPT doesn't hear the vocals.</b> In Turn 1 it said "no vocals" for 7 of 10 vocal clips and called most of them generic electronic instrumentals. Its verdicts were "AI" at 55–60% almost every time, as before.</li>
+<li><b>Claude can't listen</b> and said so; its answers were 52–55% coin flips.</li>
+</ul>
+
+<h3>Frequency test: do high frequencies make a model say "human"?</h3>
+<p>One pair, two files, with the frequency ceiling as the only intended difference. The AI song (Suno v3.5, source limited to 8 kHz) and its human partner (h03, full bandwidth to about 16 kHz) were both cut to 30 s and encoded as 44.1 kHz stereo 192 kbps MP3 at −16 LUFS.</p>
+<div class="tw"><table>
+<tr><th>Model</th><th>AI file (nothing above 8 kHz)</th><th>Human file (full bandwidth)</th><th>Did it notice the difference?</th></tr>
+<tr><td>Claude</td><td class="n">AI 57%</td><td class="n bad">AI 55%</td><td>Yes. It measured "energy stops at about 8 kHz" on the AI file, but moved only 2 points. It read the human file's 15.7 kHz cutoff as a sign of lossy encoding</td></tr>
+<tr><td>ChatGPT</td><td class="n">AI 58%</td><td class="n bad">AI 58%</td><td>No. It reported no frequency ceiling for either file</td></tr>
+<tr><td>Gemini</td><td class="n">AI 92%</td><td class="n bad">AI 88%</td><td>No mention. At full bandwidth the human song still sounded "AI" to it (85% at 16 kHz in the vocal round, 88% here)</td></tr>
+</table></div>
+<p><b>Result: no.</b> Full high-frequency content did not make any model call the human song human. The models either didn't measure it or didn't treat it as evidence of human origin. This is a 2-file check, so it rules out "high frequencies are a strong cue for these models", not a weak effect.</p>
+
+<h2>6. Time, tokens and cost</h2>
 <div class="tw"><table>
 <tr><th>Model (app, plan)</th><th>Median time per chat (both turns)</th><th>Est. input tokens per chat</th><th>Est. output tokens per chat</th><th>Illustrative cost per chat</th></tr>
 <tr><td>ChatGPT (chatgpt.com, Go, Think off)</td><td class="n">≈ 1¾ – 2½ min</td><td class="n">≈ 2,500</td><td class="n">≈ 2,500</td><td class="n">≈ $0.045</td></tr>
@@ -162,30 +188,33 @@ Turn 2: {"verdict": "HUMAN", "confidence": 88,
 </ul>
 <p class="note">Token estimates come from 50 of the 90 chats (all of L2, plus L4 for ChatGPT and Gemini). Length capture was added after L0 and Claude's L4 had run. The runs themselves cost nothing beyond the existing subscriptions.</p>
 
-<h2>6. What this means</h2>
+<h2>7. What this means</h2>
 <ol>
 <li><b>"Detection" by ChatGPT and Claude is metadata reading.</b> Given the raw file, both open it with code, find <code>made with suno</code> or a 2009–2019 artist tag, and answer with 90–99% confidence. Once the tags are gone they drop to chance (4–7/10) and mostly default to "AI".</li>
 <li><b>Claude is honest about it.</b> In nearly every answer it says it cannot listen and that its verdict rests on tags or weak technical cues. Its confidence stays at 52–62% when it has nothing, which is well calibrated.</li>
 <li><b>ChatGPT sounds as if it listened, but its answers don't support that.</b> On clean files it writes about "repetitive motifs" and "polished synth timbres" and says "AI" almost every time, including on human tracks. At L2 it called a human jazzy-trap beat "cinematic orchestral".</li>
 <li><b>Gemini is the only model that listens, and listening alone didn't work.</b> It got 6/10 at every level, misses most Suno tracks with 75–92% confidence, gets basic facts like track length wrong, and sometimes can't process a file at all.</li>
 <li><b>Our own cleanup leaks into the evidence.</b> At L4, Claude repeatedly cites the 15 kHz cutoff and the fade that our sanitiser adds to every file. At L2, with no cap, it used track length instead. These cues are identical for AI and human files, or only weakly related to them, so they can't support real detection.</li>
-<li><b>Practical takeaway:</b> "Is this AI?" answers from chat assistants are only reliable when the file still carries its provenance tags, and then a simple tag reader would do the same job. On clean audio, none of these assistants detects AI music better than chance.</li>
+<li><b>With older, vocal AI songs, Gemini finally separates AI from human</b> (all 5 AI songs caught, perfect ranking), but it also calls 3 of 5 human songs AI at its own threshold, and it cites the AI-written lyrics every time. ChatGPT and Claude stay at chance. High frequencies did not push any model towards "human".</li>
+<li><b>Practical takeaway:</b> "Is this AI?" answers from chat assistants are only reliable when the file still carries its provenance tags, and then a simple tag reader would do the same job. On clean audio of current generators (Suno v5), none of them detects AI music better than chance. The one signal we found (Gemini, older generators, vocals) may come from the lyrics rather than the sound.</li>
 </ol>
 
-<h2>7. Caveats</h2>
+<h2>8. Caveats</h2>
 <ul>
 <li>10 tracks and one run per item. This is a smoke test, not a measurement.</li>
 <li>Gemini's app now shows "Gemini 4" with the mode picker on Flash. That differs from the 3.8 Flash used in the pilot, so Gemini isn't directly comparable across runs.</li>
 <li>Some chats were redone after technical failures: a frozen tab, a misrouted upload, and a ChatGPT upload that failed twice. One Claude chat was resumed after a pause. Gemini's "could not access" answers are scored as given (50%). One-off retries, which failed again, are in <code>results/ladder_retries.jsonl</code>.</li>
 <li>Human tracks were chosen from metadata; vocal and instrumental labels haven't been checked by ear.</li>
+<li>Round 3 changes two things at once (older generators and vocals), and every file there is 16 kHz mono, which hides high-frequency detail for everyone. The SONICS songs have AI-written lyrics, which is a content cue, not an audio one.</li>
 </ul>
 
-<h2>8. Next steps</h2>
+<h2>9. Next steps</h2>
 <ol>
 <li>Drop the 15 kHz low-pass and fades from the clip level, so the models' "evidence" isn't our own processing. Optionally run L1 (tags stripped only) to see whether 48 kHz and encoder fingerprints alone are enough for the code-using models.</li>
 <li>Move to API runs with native-audio models for real listening tests and exact token costs.</li>
 <li>Scale up from 10 to 40+ tracks with 3 runs per item before ranking any model.</li>
 <li>Check Gemini's "could not access" failures, which clustered on Suno files.</li>
+<li>Separate lyrics from sound: rerun round 3 with AI songs that have human-written lyrics (SONICS "half fake" songs) to see whether Gemini's signal survives.</li>
 </ol>
 
 <h2>Files</h2>
@@ -194,6 +223,7 @@ Turn 2: {"verdict": "HUMAN", "confidence": 88,
 <li><code>results/ladder_raw_log.jsonl</code>: every Turn 1 and Turn 2 answer from run 2</li>
 <li><code>results/ladder_summary.json</code>, <code>scripts/score_ladder.py</code>: the numbers on this page and how they are computed</li>
 <li><code>results/ladder_runsheet.csv</code>: shuffled run order</li>
+<li><code>results/vocal_raw_log.jsonl</code>, <code>results/freq_raw_log.jsonl</code>, <code>results/vocal_summary.json</code>, <code>scripts/make_vocal_round.sh</code>, <code>scripts/make_freq_test.sh</code>, <code>scripts/score_vocal.py</code>: round 3 and the frequency test</li>
 <li><code>results/pilot_report.md</code>: the 12 Oct pilot</li>
 <li><code>scripts/make_levels.sh</code>, <code>scripts/browser/</code>: how the files and runs are produced</li>
 </ul>

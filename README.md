@@ -302,6 +302,16 @@ Correct out of 10 (chance = 5). Full tables, examples, token estimates and cavea
 
 ChatGPT and Claude detect only by reading embedded tags with code; once the tags are gone, all three models are at chance.
 
+### Round 3: vocal songs from older generators (17 Oct)
+
+5 SONICS songs (Suno v3.5 / Udio, AI-written lyrics) vs 5 human CC vocal tracks, all at identical 16 kHz mono quality, 30 s clips.
+
+| | ChatGPT | Claude | Gemini |
+|---|---|---|---|
+| Correct of 10 | 5 | 6 | 7 (all 5 AI caught, perfect ranking) |
+
+Gemini's signal may come from the AI-written lyrics it cites. A 2-file frequency test found that full high-frequency content did not make any model call a human song human.
+
 ---
 
 ## 8. Stretch goals
