@@ -1,7 +1,9 @@
 # Can LLMs Hear the Machine?
 ### A blind benchmark for AI-generated music detection by multimodal LLMs
 
-> Innovation-team project · Owner: Atharva · Status: **pilot complete, building dataset**
+> Innovation-team project · Owner: Atharva · Status: **run 2 complete (difficulty ladder, 10 tracks, 3 models)**
+>
+> **Results page: <https://atharva-729.github.io/AI-music-detection-benchmark/>**
 
 ---
 
@@ -41,10 +43,12 @@ Note that `ffmpeg -c copy` **does not** remove encoder fingerprints. It copies t
 - [x] Pilot: 2 tracks (1 AI, 1 human), 1 model. The model leaned the right way at ~60% confidence.
 - [x] Sanitisation pipeline (`scripts/sanitize.sh`) and leak checker (`scripts/verify.sh`)
 - [x] Scoring script (`scripts/score.py`)
-- [ ] **Build the dataset** (§3): target ≥ 50 AI + ≥ 50 human tracks
-- [ ] Sanitise → verify → spot-listen a few clips
-- [ ] Run every model under the protocol (§5), 3 runs per track
-- [ ] Score (§6) and write up findings
+- [x] Pilot 2 (12 Oct): 10 tracks, 3 chat apps, 5 conditions. All at chance ([results/pilot_report.md](results/pilot_report.md))
+- [x] Run 2 (16 Oct): difficulty ladder L0 / L2 / L4, 90 chats ([LEVELS_PLAN.md](LEVELS_PLAN.md), [results page](https://atharva-729.github.io/AI-music-detection-benchmark/))
+- [ ] Ladder levels L1 and L3 (designed, not run)
+- [ ] **Scale the dataset** (§3): target ≥ 50 AI + ≥ 50 human tracks (20 + 20 downloaded so far)
+- [ ] Spot-listen the tracks to confirm vocal/instrumental labels
+- [ ] Run every model under the protocol (§5), 3 runs per track, ideally through APIs with native audio input
 - [ ] Optional: a non-LLM baseline (small CNN on mel spectrograms) for reference
 - [ ] Optional: robustness rounds (§8)
 
@@ -282,11 +286,21 @@ With 100 tracks, a model with true accuracy 70% will measure somewhere in about 
 
 The verdicts were correct, but n = 2 says nothing statistically. The pilot's real value was finding the leak list in §1.
 
-### Main run
+### Pilot 2 (n = 10, 12 Oct)
 
-| Model | Interface | Date | Brier ↓ | Bal. acc | Human FPR ↓ | AUROC | ECE ↓ | Identified |
-|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | |
+Every model and setting landed at chance (40–50% correct). See [results/pilot_report.md](results/pilot_report.md).
+
+### Run 2: difficulty ladder (n = 10 per cell, 16 Oct)
+
+Correct out of 10 (chance = 5). Full tables, examples, token estimates and caveats are on the **[results page](https://atharva-729.github.io/AI-music-detection-benchmark/)**.
+
+| Level | ChatGPT | Claude | Gemini |
+|---|---|---|---|
+| L0 raw file (tags intact) | 10 | 10 | 6 |
+| L2 same format, full length | 4 | 7 | 6 |
+| L4 30 s clip, loudness-matched | 5 | 6 | 6 |
+
+ChatGPT and Claude detect only by reading embedded tags with code; once the tags are gone, all three models are at chance.
 
 ---
 

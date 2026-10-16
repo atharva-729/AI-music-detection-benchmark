@@ -2,6 +2,8 @@
 
 Date: 12 October 2026 · Status: **pilot complete on 10 tracks, three models, five conditions**
 
+> **Follow-up:** run 2 (16 Oct) re-tested the same 10 tracks as a difficulty ladder, from raw files with tags down to this pilot's 30 s clips, with a "describe first" turn before each verdict. It answered next steps 1 and 3 below. See [LEVELS_PLAN.md](../LEVELS_PLAN.md) and the [results page](https://atharva-729.github.io/AI-music-detection-benchmark/).
+
 ## Summary
 
 - **No model or setting beat chance.** Across five conditions, accuracy was 40–50% on a balanced set of 5 AI and 5 human tracks.
@@ -116,9 +118,9 @@ Only the Claude runs were timed. The rest are estimates from how long each answe
 
 ## Next steps
 
-1. **Test whether the models hear the audio at all.** Ask each to describe one clip (tempo, instruments, vocals or not) with no detection question. Claude has already said it cannot.
+1. **Test whether the models hear the audio at all.** Ask each to describe one clip (tempo, instruments, vocals or not) with no detection question. Claude has already said it cannot. *Done in run 2: ChatGPT and Claude analyse the file with code; Gemini listens but gets basic facts such as duration wrong.*
 2. **Spot-listen the 10 pilot tracks** to confirm which have vocals.
-3. **Decide whether the remaining 30 tracks are worth running** on these apps, given every condition landed at chance.
+3. **Decide whether the remaining 30 tracks are worth running** on these apps, given every condition landed at chance. *Run 2 found the same result at every level once tags were removed.*
 4. **If the study continues, change one variable at a time** (length only, or thinking only), and consider models with native audio input through an API, which is where real listening is most likely.
 
 ## Files
