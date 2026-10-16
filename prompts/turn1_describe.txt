@@ -1,0 +1,23 @@
+Attached is one audio file. Describe it as precisely as you can.
+Do not use web search or song-identification tools. You may analyse the file with code if you are able to.
+For any field you cannot actually determine, use null. Do not guess.
+
+Answer with ONLY this JSON object:
+{
+  "how_you_accessed_it": "listened directly" | "code analysis only" | "both" | "could not access",
+  "tempo_bpm": <number or null>,
+  "key": "<e.g. A minor, or null>",
+  "genre": "<or null>",
+  "instruments": ["..."],
+  "vocals": "yes" | "no" | "unsure",
+  "vocal_description": "<language, gender, lyrics heard, or empty>",
+  "structure": "<sections with approximate timestamps>",
+  "duration_s": <number or null>,
+  "sample_rate_hz": <number or null>,
+  "bitrate_kbps": <number or null>,
+  "channels": <number or null>,
+  "codec": "<or null>",
+  "embedded_metadata": "<any tags, comments or encoder strings found in the file, quoted exactly, or 'none found'>",
+  "loudness_lufs": <number or null>,
+  "highest_frequency_khz": <number or null>
+}
