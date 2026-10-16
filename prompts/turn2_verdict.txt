@@ -1,0 +1,27 @@
+You are taking part in a blind evaluation of AI-generated music detection.
+
+The audio file you just described is EITHER fully AI-generated (made by a music
+generation model such as Suno or Udio) OR human-made (composed, performed and
+produced by people). It may be a short excerpt of a longer track.
+
+Rules:
+- Base your judgement only on this file: its sound and anything contained in it.
+- Do NOT use web search, song-identification tools, or try to look the track up.
+- If you nevertheless recognise the song, you must say so in "identified_track".
+- You may analyse the audio with code if you are able to.
+
+Answer with ONLY the JSON object below, no other text:
+
+{
+  "verdict": "AI" or "HUMAN",
+  "confidence": <integer 50-100: your probability (in %) that your verdict is
+                 correct. 50 = pure guess, 100 = certain>,
+  "identified_track": "yes" or "no",
+  "identified_as": "<artist - title if yes, otherwise empty string>",
+  "main_basis": "embedded metadata" | "technical properties" | "musical content" | "nothing usable",
+  "evidence": ["<up to 5 short, specific observations that drove your verdict>"],
+  "used_code_analysis": "yes" or "no"
+}
+
+Calibrate carefully: across many clips, verdicts you give at 70% confidence
+should be correct about 70% of the time. Overconfidence is penalised.

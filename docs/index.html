@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can LLMs Hear the Machine?</title>
+<meta name="description" content="A blind benchmark of whether chat LLMs can tell AI-generated music from human music, run as a difficulty ladder.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#5d5b55;--card:#ffffff;--line:#e3e0d8;--accent:#2f5d8a;--good:#2e7d4f;--bad:#b3412f;--warn:#9a6a12;--code:#f2f0ea}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--fg:#eceae4;--muted:#a8a59c;--card:#1f1f1d;--line:#34332f;--accent:#7fb0e0;--good:#6cc492;--bad:#ec8a78;--warn:#e0b45a;--code:#262623}}
+:root[data-theme="dark"]{--bg:#161615;--fg:#eceae4;--muted:#a8a59c;--card:#1f1f1d;--line:#34332f;--accent:#7fb0e0;--good:#6cc492;--bad:#ec8a78;--warn:#e0b45a;--code:#262623}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:40px 16px 80px}
+h1{font-size:2rem;line-height:1.2;margin:0 0 8px}
+h2{font-size:1.35rem;margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:1.05rem;margin:24px 0 8px}
+p,li{max-width:72ch}
+.sub{color:var(--muted);margin:0 0 20px}
+.status{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;margin:20px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
+.kpi b{display:block;font-size:1.6rem;line-height:1.2}
+.kpi span{color:var(--muted);font-size:.9rem}
+.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.good{color:var(--good);font-weight:600}.bad{color:var(--bad);font-weight:600}.warn{color:var(--warn);font-weight:600}
+.todo{color:var(--muted);font-style:italic}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:.85rem;line-height:1.45;white-space:pre-wrap}
+code{background:var(--code);padding:1px 4px;border-radius:4px;font-size:.9em}
+.ex{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.ex{grid-template-columns:1fr}}
+.ex>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
+.ex h4{margin:0 0 6px}
+.note{color:var(--muted);font-size:.9rem}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Can LLMs Hear the Machine?</h1>
+<p class="sub">A blind test of whether ChatGPT, Gemini and Claude can tell AI-generated music from human music, run as a difficulty ladder. Innovation team · Atharva · run 2 · 16 October 2026</p>
+
+<div class="status">
+<b>Where we are.</b> The pilot (12 Oct) tested only the hardest condition, and every model was at chance. Run 2 starts from the easiest condition, the untouched file, and removes one giveaway per level.
+So far <b>40 of 90 planned chats</b> are done: level L0 for all three models and level L4 for Claude.
+Still to run: L4 for ChatGPT and Gemini, then L2 for all three (50 chats, about 2.5 hours).
+</div>
+
+<div class="kpis">
+<div class="kpi"><b class="good">10 / 10</b><span>ChatGPT and Claude on raw files: both read the "made with suno" tag</span></div>
+<div class="kpi"><b class="bad">1 / 5</b><span>AI tracks Gemini caught on raw files, judging by ear (6 of 10 overall)</span></div>
+<div class="kpi"><b class="warn">6 / 10</b><span>Claude on 30 s cleaned clips, with 52–60% confidence</span></div>
+<div class="kpi"><b>0</b><span>models that claim to hear the audio <i>and</i> beat chance</span></div>
+</div>
+
+<h2>1. The question</h2>
+<p>People already upload songs to chat assistants and ask "is this AI?". We want to know whether the answers mean anything: can the model detect AI music, is its confidence honest, and what is it actually basing the verdict on?</p>
+<p>Ten tracks, as five style-matched pairs: 5 made by <b>Suno v5 / v5.5</b> (2026) and 5 <b>human</b> tracks from Creative Commons netlabels and ccMixter, all released before 2022 (lo-fi chillhop, UK garage / house-pop, jazzy trap, afro house, dub techno). These are deliberately hard pairs: the project owner can't reliably tell them apart by ear either.</p>
+
+<h2>2. The difficulty ladder</h2>
+<p>Each level removes one kind of giveaway from the level above. Detection that works on L0 but fails on L4 tells you <i>what</i> the model was relying on.</p>
+<div class="tw"><table>
+<tr><th>Level</th><th>What the model gets</th><th>What still gives it away</th><th>Status</th></tr>
+<tr><td><b>L0 Raw</b></td><td>The original file, renamed to a random ID</td><td>Everything. Suno files carry the tag <code>comment: made with suno; created 2026-…</code>, are 48 kHz, quieter and newly encoded. Human files carry artist, album, year (2009–2019), cover art and old encoders</td><td class="good">Done, all 3 models</td></tr>
+<tr><td>L1 No tags</td><td>Tags stripped, audio untouched</td><td>Encoder fingerprints, sample rate (48 vs 44.1 kHz), bitrate, length, loudness</td><td class="todo">Later</td></tr>
+<tr><td><b>L2 Same format</b></td><td>Everything re-encoded the same way, <i>no</i> 15 kHz cap</td><td>Track length, loudness, natural frequency ceiling</td><td class="todo">Next</td></tr>
+<tr><td>L3 Capped</td><td>L2 plus a 15 kHz low-pass on every file</td><td>Track length, loudness</td><td class="todo">Later</td></tr>
+<tr><td><b>L4 Clip</b></td><td>30 s clip from 25% into the track, loudness-matched to −16 LUFS, faded in and out (the pilot condition)</td><td>Only the sound itself</td><td><span class="good">Claude done</span>; ChatGPT and Gemini next</td></tr>
+</table></div>
+<p class="note">Note on the human files: they are actually <i>louder</i> than the Suno files (−7.5 to −11.7 LUFS against about −14), so a model that reasons "loud and compressed means AI" would get L2 backwards.</p>
+
+<h2>3. How each test works (with an example)</h2>
+<p>Every file goes into a fresh chat (temporary or memory-off), and the chat has two turns.</p>
+<p><b>Turn 1, describe.</b> AI is not mentioned. This checks whether the model can perceive the file at all. It asks for tempo, key, instruments, vocals, duration, sample rate, bitrate, embedded tags, loudness and frequency ceiling, plus <i>how</i> the model accessed the audio ("listened directly", "code analysis only", …).</p>
+<p><b>Turn 2, verdict.</b> In the same chat, the model is told the file is either AI-generated or human-made and asked for a JSON verdict, a confidence of 50–100, whether it recognised the song, the main basis for the verdict and up to five pieces of evidence.</p>
+
+<h3>Example: one Suno track (afro house, 4 min 8 s) as a raw file (L0)</h3>
+<div class="ex">
+<div><h4>ChatGPT (code)</h4>
+<pre>Turn 1: accessed "both" (code + audio player)
+  sample rate 48000 Hz, 196 kbps, -13.6 LUFS
+  embedded_metadata: comment "made with suno;
+  created 2026-05-24T17:58:59Z; id …"
+Turn 2: {"verdict": "AI", "confidence": 99,
+  "main_basis": "embedded metadata",
+  "evidence": ["Embedded comment explicitly
+  states: 'made with suno …'", …]}</pre>
+<span class="good">Correct, but it read the label rather than hearing the music.</span></div>
+<div><h4>Gemini (listening)</h4>
+<pre>Turn 1: accessed "listened directly"
+  genre "Afro House / Tribal House"
+  duration 156 s (actual: 248 s)
+  sample rate, bitrate, tags: null
+Turn 2: {"verdict": "HUMAN", "confidence": 88,
+  "main_basis": "musical content",
+  "evidence": ["Clean, crisp transient
+  separation …", "authentic groove, natural
+  velocity humanization …"]}</pre>
+<span class="bad">Wrong, and confidently so. It never sees the tag.</span></div>
+</div>
+<p class="note">Same file, two separate chats. Answers are trimmed; full text is in <code>results/ladder_raw_log.jsonl</code>.</p>
+
+<h2>4. Results</h2>
+<h3>Headline table</h3>
+<div class="tw"><table>
+<tr><th>Level</th><th>Model</th><th>Correct</th><th>AI caught</th><th>Human called AI</th><th>Brier ↓</th><th>AUROC</th><th>Confidence</th><th>Main basis</th></tr>
+<tr><td>L0 Raw</td><td>ChatGPT</td><td class="n good">10 / 10</td><td class="n">5 / 5</td><td class="n">0 / 5</td><td class="n good">0.014</td><td class="n">1.00</td><td class="n">68–99%</td><td>embedded metadata (9 of 10)</td></tr>
+<tr><td>L0 Raw</td><td>Claude</td><td class="n good">10 / 10</td><td class="n">5 / 5</td><td class="n">0 / 5</td><td class="n good">0.004</td><td class="n">1.00</td><td class="n">90–97%</td><td>embedded metadata (10 of 10)</td></tr>
+<tr><td>L0 Raw</td><td>Gemini</td><td class="n bad">6 / 10</td><td class="n bad">1 / 5</td><td class="n">0 / 5</td><td class="n">0.230</td><td class="n">0.82</td><td class="n">50–95%</td><td>musical content (9 of 10)</td></tr>
+<tr><td>L4 Clip</td><td>Claude</td><td class="n warn">6 / 10</td><td class="n">5 / 5</td><td class="n bad">4 / 5</td><td class="n">0.230</td><td class="n">0.90</td><td class="n">52–60%</td><td>technical properties (9 of 10)</td></tr>
+<tr><td>L4 Clip</td><td>ChatGPT</td><td colspan="8" class="todo">not run yet</td></tr>
+<tr><td>L4 Clip</td><td>Gemini</td><td colspan="8" class="todo">not run yet</td></tr>
+<tr><td>L2 Same format</td><td>all three</td><td colspan="8" class="todo">not run yet</td></tr>
+</table></div>
+<p class="note"><b>How to read it.</b> <b>Brier</b> is the mean squared error of the stated probability; 0.25 is what you get by always answering 50%, so anything near or above 0.25 is no better than not answering. <b>AUROC</b> asks whether AI tracks got higher "AI" probabilities than human ones (0.5 = chance). With 10 tracks every number here has wide error bars.</p>
+
+<h3>Turn 1: can the model perceive the file?</h3>
+<div class="tw"><table>
+<tr><th>Model</th><th>How it says it accessed the audio</th><th>Sample rate right (L0)</th><th>Median duration error (L0)</th><th>Found the Suno tag (L0)</th></tr>
+<tr><td>ChatGPT</td><td>"both": Python (ffprobe, librosa) plus an audio player</td><td class="n good">10 / 10</td><td class="n good">0 s</td><td class="n good">5 / 5</td></tr>
+<tr><td>Claude</td><td>"code analysis only"; it says it cannot listen</td><td class="n good">10 / 10</td><td class="n good">0 s</td><td class="n good">5 / 5</td></tr>
+<tr><td>Gemini</td><td>"listened directly"; no code tool</td><td class="n bad">0 / 10 (always null)</td><td class="n bad">91 s</td><td class="n bad">0 / 5</td></tr>
+</table></div>
+<p>Gemini's descriptions sound plausible (genres, instruments, vocal lines), but it was wrong about how long every track is, by 1.5 to 6 minutes on tracks of 4 to 9 minutes. It probably hears only part of a long file. Once it said it "could not access" a file that had attached correctly.</p>
+
+<h3>Comparison with the pilot (the hardest level, one turn)</h3>
+<div class="tw"><table>
+<tr><th>Condition</th><th>Claude correct</th><th>Brier</th><th>Confidence</th></tr>
+<tr><td>Pilot, 30 s clip, verdict only</td><td class="n">4 / 10</td><td class="n">0.272</td><td class="n">52–60%</td></tr>
+<tr><td>Run 2 L4, 30 s clip, describe first, then verdict</td><td class="n">6 / 10</td><td class="n">0.230</td><td class="n">52–60%</td></tr>
+</table></div>
+<p>Describing first did not make Claude better at detection. In run 2 it said "AI" for 9 of 10 clips, so it caught every AI clip but also flagged 4 of 5 human ones. The slightly better score comes from that lean, not from new evidence.</p>
+
+<h2>5. Time and cost</h2>
+<div class="tw"><table>
+<tr><th>Model (app, plan)</th><th>Median time per chat (both turns)</th><th>Effort shown</th></tr>
+<tr><td>ChatGPT (chatgpt.com, Go plan, Think off)</td><td class="n">≈ 2 min 10 s</td><td>8–17 Python cells per file; "Worked for 1m 22s – 2m 1s"</td></tr>
+<tr><td>Claude (claude.ai, Pro plan, Sonnet 5.5 Medium)</td><td class="n">≈ 1 min 10 s</td><td>several shell / Python commands; up to 3 min on large files</td></tr>
+<tr><td>Gemini (gemini.google.com, Flash mode)</td><td class="n">≈ 40 s</td><td>no code, answers directly</td></tr>
+</table></div>
+<p><b>Cost:</b> it cannot be measured from these runs. The consumer apps show no token counts, so the only spend is the existing subscriptions, and how much of each plan's usage allowance was used isn't visible. A real cost figure needs the same test run through each provider's API, which logs tokens per request. That is also where models with native audio input can be tested properly.</p>
+
+<h2>6. What this means</h2>
+<ol>
+<li><b>"Detection" by ChatGPT and Claude is metadata reading.</b> Given the raw file, both open it with code, find <code>made with suno</code> or a 2009–2019 artist tag, and answer with 90–99% confidence. Once the tags are gone (L4) Claude falls back to near-coin-flip guesses at 52–60%. ChatGPT at L4 is still to run.</li>
+<li><b>Claude is honest about it.</b> In nearly every answer it says it cannot listen and that its verdict rests on tags or weak technical cues. Its low confidence on clips is well calibrated.</li>
+<li><b>Gemini is the only model that claims to listen, and listening alone didn't work.</b> It called 9 of 10 tracks human, missed 4 of 5 Suno tracks with 75–92% confidence, and justified them with generic phrases ("clean transients", "natural groove"). Its basic facts about the file (duration) were wrong.</li>
+<li><b>Our own cleanup leaks into the evidence.</b> On L4 clips Claude repeatedly cites the 15 kHz cutoff and the fade-out, both of which our sanitiser adds to every clip. They are identical for AI and human files, so they can't help, but they distort the reasoning. L2 (no cap) tests this directly.</li>
+<li><b>Practical takeaway:</b> "Is this AI?" answers from chat assistants are only reliable when the file still carries its provenance tags, and in that case a tag reader would do the same job. On clean audio none of these assistants has shown real detection ability yet.</li>
+</ol>
+
+<h2>7. Caveats</h2>
+<ul>
+<li>10 tracks and one run per item. This is a smoke test, not a measurement.</li>
+<li>Gemini's app now shows "Gemini 4" with the mode picker on Flash. That differs from the 3.8 Flash used in the pilot, so Gemini isn't directly comparable across runs.</li>
+<li>Two chats were re-run after technical failures (a frozen tab and a misrouted upload), and one Claude chat was resumed after a pause. All are noted in the log.</li>
+<li>Human tracks were chosen from metadata; vocal and instrumental labels haven't been checked by ear.</li>
+</ul>
+
+<h2>8. Next steps</h2>
+<ol>
+<li>Run L4 for ChatGPT and Gemini, then L2 for all three (50 chats).</li>
+<li>Drop the 15 kHz low-pass and fades from L4, so the models' "evidence" isn't our own processing.</li>
+<li>Move to API runs with native-audio models for real listening tests and logged token costs.</li>
+<li>Scale up from 10 to 40+ tracks, with 3 runs per item, before ranking any model.</li>
+</ol>
+
+<h2>Files</h2>
+<ul>
+<li><code>LEVELS_PLAN.md</code>: the ladder design and prompts</li>
+<li><code>results/ladder_raw_log.jsonl</code>: every Turn 1 and Turn 2 answer from run 2</li>
+<li><code>results/ladder_runsheet.csv</code>: shuffled run order</li>
+<li><code>results/pilot_report.md</code>: the 12 Oct pilot</li>
+<li><code>scripts/make_levels.sh</code>, <code>scripts/browser/</code>: how the files and runs are produced</li>
+</ul>
+<p class="note">Audio files and the answer key are kept out of the repository.</p>
+
+</main>
+</body>
+</html>

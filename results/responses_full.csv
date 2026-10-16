@@ -1,0 +1,11 @@
+model,run,track_id,verdict,confidence,identified_track
+gpt-5.6-luna-full-song,1,full_02c79bb7,HUMAN,62,no
+gpt-5.6-luna-full-song,1,full_5307457d,AI,60,no
+gpt-5.6-luna-full-song,1,full_87b9e49d,AI,66,no
+gpt-5.6-luna-full-song,1,full_3d54763c,AI,58,no
+gpt-5.6-luna-full-song,1,full_8b0d8009,AI,63,no
+gpt-5.6-luna-full-song,1,full_a0661dd0,AI,66,no
+gpt-5.6-luna-full-song,1,full_8cbf9fd1,HUMAN,62,no
+gpt-5.6-luna-full-song,1,full_ac919c20,AI,62,no
+gpt-5.6-luna-full-song,1,full_2137b4a8,AI,62,no
+gpt-5.6-luna-full-song,1,full_5a7d5a58,AI,63,no
