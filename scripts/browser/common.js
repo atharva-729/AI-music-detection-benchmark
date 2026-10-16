@@ -63,6 +63,6 @@ window.compact=(raw)=>{const t=raw.replace(/[“”]/g,'"').replace(/[‘’]/g,
  if(/"verdict"/.test(t)){return JSON.stringify({verdict:fld(t,'verdict'),confidence:fld(t,'confidence'),identified_track:fld(t,'identified_track'),identified_as:c(fld(t,'identified_as'),60),main_basis:fld(t,'main_basis'),used_code_analysis:fld(t,'used_code_analysis'),evidence:arr(t,'evidence').slice(0,5).map(x=>c(x,110))});}
  if(/"how_you_accessed_it"/.test(t)){const md=fld(t,'embedded_metadata')||'';return JSON.stringify({how_you_accessed_it:fld(t,'how_you_accessed_it'),tempo_bpm:fld(t,'tempo_bpm'),key:fld(t,'key'),genre:c(fld(t,'genre'),70),instruments:arr(t,'instruments').slice(0,6).map(x=>c(x,30)),vocals:fld(t,'vocals'),vocal_description:c(fld(t,'vocal_description'),80),duration_s:fld(t,'duration_s'),sample_rate_hz:fld(t,'sample_rate_hz'),bitrate_kbps:fld(t,'bitrate_kbps'),channels:fld(t,'channels'),codec:c(fld(t,'codec'),30),loudness_lufs:fld(t,'loudness_lufs'),highest_frequency_khz:fld(t,'highest_frequency_khz'),metadata_none:/none found/i.test(md),metadata_suno:/suno/i.test(md),metadata_snip:c(md,120)});}
  return 'NOJSON:'+c(t.trim(),600);};
-window.G=k=>((window.LA1||'')+'\n=====\n'+(window.LA2||'')).slice(k*700,(k+1)*700);
+window.G=k=>((window.LA1||'')+'\n=====\n'+(window.LA2||'')).slice(k*450,(k+1)*450);
 window.sleep=ms=>new Promise(r=>setTimeout(r,ms));
 'common ok';

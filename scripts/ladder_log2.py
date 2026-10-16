@@ -3,7 +3,8 @@ stdin: turn-1 capture, a line '=====', turn-2 capture. Each capture = one meta J
 import json, sys, datetime
 lv, model, order, tid = sys.argv[1:5]
 blocks = sys.stdin.read().split("\n=====\n")
-with open("results/ladder_raw_log.jsonl", "a", encoding="utf-8") as f:
+import os
+with open(os.environ.get("LADDER_LOG", "results/ladder_raw_log.jsonl"), "a", encoding="utf-8") as f:
     for turn, b in enumerate(blocks, 1):
         meta_line, _, rest = b.strip().partition("\n")
         try: meta = json.loads(meta_line)
