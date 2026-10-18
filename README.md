@@ -1,7 +1,7 @@
 # Can LLMs Hear the Machine?
 ### A blind benchmark for AI-generated music detection by multimodal LLMs
 
-> Innovation-team project · Owner: Atharva · Status: **run 2 complete (difficulty ladder, 10 tracks, 3 models)**
+> Innovation-team project · Owner: Atharva · Status: **parked (18 Oct 2026): no model detected AI music from the sound alone**
 >
 > **Results page: <https://atharva-729.github.io/AI-music-detection-benchmark/>**
 
@@ -310,7 +310,7 @@ ChatGPT and Claude detect only by reading embedded tags with code; once the tags
 |---|---|---|---|
 | Correct of 10 | 5 | 6 | 7 (all 5 AI caught, perfect ranking) |
 
-Gemini's signal may come from the AI-written lyrics it cites. A 2-file frequency test found that full high-frequency content did not make any model call a human song human.
+Follow-up (18 Oct): with human-written lyrics on the same kind of AI music, Gemini fell to chance (AUROC 1.00 → 0.52), so its signal came from the AI-written lyrics, not the sound. A 2-file frequency test found that full high-frequency content did not make any model call a human song human.
 
 ---
 
