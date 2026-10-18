@@ -3,242 +3,484 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Can LLMs Hear the Machine?</title>
-<meta name="description" content="A blind benchmark of whether chat LLMs can tell AI-generated music from human music, run as a difficulty ladder.">
+<title>Can AI Hear AI Music?</title>
+<meta name="description" content="We uploaded AI-made and human-made songs to ChatGPT, Claude and Gemini and asked: is this AI? Five experiments, 131 verdicts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#5d5b55;--card:#ffffff;--line:#e3e0d8;--accent:#2f5d8a;--good:#2e7d4f;--bad:#b3412f;--warn:#9a6a12;--code:#f2f0ea}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--fg:#eceae4;--muted:#a8a59c;--card:#1f1f1d;--line:#34332f;--accent:#7fb0e0;--good:#6cc492;--bad:#ec8a78;--warn:#e0b45a;--code:#262623}}
-:root[data-theme="dark"]{--bg:#161615;--fg:#eceae4;--muted:#a8a59c;--card:#1f1f1d;--line:#34332f;--accent:#7fb0e0;--good:#6cc492;--bad:#ec8a78;--warn:#e0b45a;--code:#262623}
+:root{
+  --ink:#0b0e14; --ink2:#131822; --ink3:#1e2531; --rule:#2c3544;
+  --fg:#ece7dc; --soft:#cfc9bd; --mut:#8e98a8;
+  --ok:#2fd3a7; --ok-ink:#04261d; --ok-bg:rgba(47,211,167,.12);
+  --bad:#ff5a4d; --bad-ink:#2b0805; --bad-bg:rgba(255,90,77,.14);
+  --warn:#f6b93b; --warn-ink:#2a1c00;
+  --flame:#ff8a2a;
+  --m-chatgpt:#3987e5; --m-claude:#d95926; --m-gemini:#199e70;
+  --serif:"Fraunces",Georgia,serif; --sans:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:920px;margin:0 auto;padding:40px 16px 80px}
-h1{font-size:2rem;line-height:1.2;margin:0 0 8px}
-h2{font-size:1.35rem;margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
-h3{font-size:1.05rem;margin:24px 0 8px}
-p,li{max-width:72ch}
-.sub{color:var(--muted);margin:0 0 20px}
-.status{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;margin:20px 0}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
-.kpi b{display:block;font-size:1.6rem;line-height:1.2}
-.kpi span{color:var(--muted);font-size:.9rem}
-.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-table{border-collapse:collapse;width:100%;font-size:.93rem}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{background:var(--code);font-weight:600}
-tr:last-child td{border-bottom:0}
-td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.good{color:var(--good);font-weight:600}.bad{color:var(--bad);font-weight:600}.warn{color:var(--warn);font-weight:600}
-.todo{color:var(--muted);font-style:italic}
-pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:.85rem;line-height:1.45;white-space:pre-wrap}
-code{background:var(--code);padding:1px 4px;border-radius:4px;font-size:.9em}
-.ex{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:700px){.ex{grid-template-columns:1fr}}
-.ex>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
-.ex h4{margin:0 0 6px}
-.note{color:var(--muted);font-size:.9rem}
-a{color:var(--accent)}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--fg);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+section{padding:44px 0;border-bottom:1px solid var(--rule)}
+section.alt{background:var(--ink2)}
+.kicker{font:500 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut);display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.kicker b{color:var(--flame);font-weight:600}
+.kicker::after{content:"";flex:1;height:1px;background:currentColor;opacity:.3}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(1.7rem,3.2vw,2.5rem);max-width:26ch}
+h2{font-size:clamp(1.3rem,2.2vw,1.7rem);margin-bottom:8px}
+h3{font-size:1.05rem;margin-bottom:6px}
+p{margin:0 0 .9em}
+.sub{color:var(--soft);max-width:76ch}
+.mono{font-family:var(--mono)}
+.c-ok{color:var(--ok)} .c-bad{color:var(--bad)} .c-warn{color:var(--warn)} .c-mut{color:var(--mut)} .c-flame{color:var(--flame)}
+mark{background:none;color:var(--warn);font-weight:600}
+.tag{display:inline-block;font:600 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 6px;border-radius:2px;white-space:nowrap}
+.tag.ai{background:var(--flame);color:#2a1300} .tag.hu{background:#7ee7ff;color:#002a33}
+.tag.ok{background:var(--ok);color:var(--ok-ink)} .tag.bad{background:var(--bad);color:var(--bad-ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+/* first screen */
+#aim{padding:22px 0 40px}
+#aim .top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px 24px;font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:34px}
+#aim .top nav a{margin-left:18px;text-decoration:none} #aim .top nav a:hover{color:var(--fg)}
+.answer{margin:22px 0 26px;padding:16px 20px;border-left:4px solid var(--flame);background:var(--ink2);max-width:78ch}
+.answer .lbl{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--flame);margin-bottom:8px}
+.answer p{font-size:1.18rem;margin:0;font-family:var(--serif)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.facts>div{background:var(--ink);padding:14px 16px}
+.facts .k{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.facts p{margin:0;color:var(--soft);font-size:14px}
+.facts b{color:var(--fg)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.tile{background:var(--ink2);border:1px solid var(--rule);padding:16px}
+.tile .n{font:600 1.9rem/1.1 var(--serif);margin-bottom:6px}
+.tile p{margin:0;color:var(--soft);font-size:13.5px}
+
+/* data */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.card{background:var(--ink);border:1px solid var(--rule);padding:18px}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--soft)} .card li{margin:4px 0}
+.card h3 .tag{margin-left:8px;vertical-align:2px}
+
+/* results grid */
+.res{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:20px;align-items:start}
+table.grid{width:100%;border-collapse:separate;border-spacing:4px}
+.grid th{font:600 11px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);text-align:left;padding:6px 8px;font-weight:600}
+.grid th.m{text-align:center}
+.grid td.ex{padding:10px 12px;background:var(--ink);border:1px solid var(--rule)}
+.grid td.ex b{display:block;font-size:14px}
+.grid td.ex span{color:var(--mut);font-size:12.5px}
+.grid td.ex .no{font:600 11px/1 var(--mono);color:var(--flame);margin-right:6px}
+.cell{width:100%;height:100%;min-height:58px;border:1px solid var(--rule);border-radius:3px;cursor:pointer;font:600 1.25rem/1 var(--serif);color:var(--fg);background:var(--ink3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.cell small{font:500 10.5px/1 var(--mono);color:var(--mut);letter-spacing:.06em}
+.cell.hi{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.cell.lo{background:var(--bad-bg);border-color:var(--bad)}
+.cell:hover,.cell:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
+.cell.na{cursor:default;background:transparent;border-style:dashed;color:var(--mut);font:500 12px var(--mono)}
+.cell.na:hover{outline:none}
+.legend{background:var(--ink);border:1px solid var(--rule);padding:16px;font-size:13.5px;color:var(--soft)}
+.legend h3{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:10px}
+.legend .row{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.legend .chip{flex:none;width:34px;height:22px;border-radius:3px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font:600 12px var(--serif)}
+.legend .chip.hi{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.legend .chip.mid{background:var(--ink3)}
+.legend .chip.lo{background:var(--bad-bg);border-color:var(--bad)}
+.notes{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.notes li{padding:12px 16px;background:var(--ink);border:1px solid var(--rule);border-left:3px solid var(--flame);color:var(--soft)}
+.notes li b{color:var(--fg)}
+
+/* chart */
+.chartbox{background:var(--ink);border:1px solid var(--rule);padding:18px;margin-top:18px;position:relative}
+.chartlegend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--soft);margin-bottom:8px}
+#chart{width:100%;height:auto;display:block}
+#chart .grid line{stroke:var(--rule);stroke-width:1}
+#chart text{fill:var(--mut);font:12px var(--sans)}
+#chart .lbl{font:600 12px var(--sans)}
+.tip{position:absolute;pointer-events:none;background:var(--ink3);border:1px solid var(--rule);padding:8px 10px;font-size:12.5px;border-radius:3px;display:none;max-width:260px;color:var(--fg)}
+.tip .t{color:var(--mut);font-size:11.5px}
+
+/* stories */
+.stories{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.story{background:var(--ink);border:1px solid var(--rule);padding:18px;display:flex;flex-direction:column}
+.story .head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px}
+.story .who{font:500 12px var(--mono);color:var(--mut);margin-bottom:10px}
+.story p{color:var(--soft);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 12px}
+.vchip{font:500 11px/1 var(--mono);padding:5px 6px;border-radius:2px;border:1px solid var(--rule);white-space:nowrap}
+.vchip.ok{border-color:var(--ok);color:var(--ok)} .vchip.bad{border-color:var(--bad);color:var(--bad)} .vchip.mut{color:var(--mut)}
+.story .listen{margin-top:auto;font:500 12px var(--mono);color:var(--flame);text-decoration:none}
+.story .listen:hover{text-decoration:underline}
+
+/* divider */
+.divider{padding:36px 0;text-align:center;background:var(--ink2)}
+.divider p{font:600 1.25rem var(--serif);margin:0 0 4px}
+.divider span{color:var(--mut);font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+
+/* how */
+.how h2{margin-top:6px}
+.tw{overflow-x:auto;margin:12px 0 4px;border:1px solid var(--rule)}
+table.plain{border-collapse:collapse;width:100%;font-size:13.5px}
+.plain th,.plain td{padding:9px 12px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.plain th{font:600 11px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);background:var(--ink2)}
+.plain tr:last-child td{border-bottom:0}
+.plain td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.how ul{color:var(--soft);padding-left:18px} .how li{margin:5px 0}
+.ex2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+pre{background:var(--ink2);border:1px solid var(--rule);padding:12px;overflow-x:auto;font:12.5px/1.5 var(--mono);white-space:pre-wrap;margin:6px 0 0;color:var(--soft)}
+code{font-family:var(--mono);font-size:.92em;background:var(--ink3);padding:1px 4px;border-radius:2px}
+.small{font-size:13px;color:var(--mut)}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(5,7,10,.72);display:none;align-items:flex-start;justify-content:center;padding:6vh 16px;z-index:50;overflow-y:auto}
+#modal.on{display:flex}
+#modal .box{background:var(--ink2);border:1px solid var(--rule);max-width:860px;width:100%;padding:20px}
+#modal .mh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+#modal button.x{background:none;border:1px solid var(--rule);color:var(--fg);font:500 12px var(--mono);padding:6px 10px;cursor:pointer}
+#modal table{width:100%;border-collapse:collapse;font-size:13.5px}
+#modal td,#modal th{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+#modal th{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+#modal td.why{color:var(--mut);font-size:12.5px}
+
+@media (max-width:900px){
+  .facts,.tiles{grid-template-columns:1fr 1fr}
+  .res{grid-template-columns:1fr}
+  .two,.stories,.ex2{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .facts,.tiles{grid-template-columns:1fr}
+  #aim .top nav{display:none}
+  .wrap{padding:0 16px}
+  .grid td.ex span{display:none}
+}
 </style>
 </head>
 <body>
-<main>
 
-<h1>Can LLMs Hear the Machine?</h1>
-<p class="sub">A blind test of whether ChatGPT, Gemini and Claude can tell AI-generated music from human music, run as a difficulty ladder. Innovation team · Atharva · run 2 · 16 October 2026</p>
-
-<div class="status">
-<b>Where we are.</b> The pilot (12 Oct) tested only the hardest condition, and every model was at chance. Run 2 starts from the easiest condition, the untouched file, and removes giveaways step by step.
-<b>Run 2 is complete for three levels: 90 chats</b> (3 levels × 3 models × 10 tracks, two turns each). <b>Round 3</b> (17 Oct) added 30 chats on vocal songs from older generators, plus a 6-chat frequency test, and a 5-chat follow-up (18 Oct) separated lyrics from sound. <b>The project is now parked.</b> Levels L1 and L3 were not run.
+<!-- ============ FIRST SCREEN ============ -->
+<section id="aim">
+<div class="wrap">
+  <div class="top"><span>AI Music Detection Benchmark</span><nav><a href="#data">Songs</a><a href="#results">Results</a><a href="#stories">Stories</a><a href="#how">How</a></nav></div>
+  <h1>Can ChatGPT, Claude or Gemini tell whether a song was made by AI?</h1>
+  <div class="answer">
+    <div class="lbl">Short answer</div>
+    <p>Not from the sound. They only "detect" AI when <mark>the file's tags say so</mark> or when <mark>the lyrics give it away</mark>.</p>
+  </div>
+  <div class="facts">
+    <div><div class="k">Question</div><p>People upload songs and ask a chatbot <b>"is this AI?"</b> Do the answers mean anything?</p></div>
+    <div><div class="k">Songs</div><p><b>15 AI songs</b> (Suno, Udio) and <b>10 human songs</b>, in pairs matched by style.</p></div>
+    <div><div class="k">Method</div><p><b>5 experiments</b>, each removing a giveaway or making the AI easier to spot. A fresh chat for every song.</p></div>
+    <div><div class="k">Check</div><p><b>131 verdicts</b> scored against the truth, with each model's stated confidence.</p></div>
+  </div>
+  <div class="tiles">
+    <div class="tile"><div class="n c-ok">10 / 10</div><p>ChatGPT and Claude on the original files. They read <b>"made with suno"</b> in the tags.</p></div>
+    <div class="tile"><div class="n">4–7 / 10</div><p>Every model once the tags are gone. <b>Chance is 5.</b></p></div>
+    <div class="tile"><div class="n c-warn">1.00 → 0.52</div><p>Gemini's best result, before and after the AI-written lyrics were swapped for human ones.</p></div>
+    <div class="tile"><div class="n c-bad">0 of 3</div><p>Models that detected AI music from the sound itself.</p></div>
+  </div>
 </div>
+</section>
 
-<div class="kpis">
-<div class="kpi"><b class="good">10 / 10</b><span>ChatGPT and Claude on raw files. Both read the "made with suno" tag with code</span></div>
-<div class="kpi"><b class="bad">4–7 / 10</b><span>every model once tags are gone (L2 and L4). Chance is 5</span></div>
-<div class="kpi"><b class="warn">6 / 10</b><span>Gemini at every level. It listens, but calls most tracks human</span></div>
-<div class="kpi"><b class="warn">1.00 → 0.52</b><span>Gemini's ranking of AI vs human songs once AI-written lyrics were replaced with human ones. Its only signal was the lyrics</span></div>
+<!-- ============ DATA ============ -->
+<section id="data" class="alt">
+<div class="wrap">
+  <div class="kicker"><b>01</b> The songs</div>
+  <h2>Real AI songs against human songs in the same style</h2>
+  <p class="sub">Each AI song was paired with a human song in the same style, so genre alone can't give the answer away. The pairs were chosen to be hard: we can't reliably tell them apart by ear either.</p>
+  <div class="two">
+    <div class="card">
+      <h3>AI-made<span class="tag ai">AI</span></h3>
+      <ul>
+        <li><b>Experiments 1–3:</b> 5 songs from <b>Suno v5 / v5.5</b>, the current generator. Mostly instrumental: lo-fi, house-pop, trap, afro house, dub techno.</li>
+        <li><b>Experiment 4:</b> 5 songs from <b>older generators</b> (Suno v3.5, Udio), all with vocals, music <i>and lyrics</i> written by AI.</li>
+        <li><b>Experiment 5:</b> 5 more older-generator Suno songs with vocals, but with <b>lyrics written by people</b>.</li>
+        <li>Sources: public datasets (Kukedlc Suno dataset; SONICS).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Human-made<span class="tag hu">Human</span></h3>
+      <ul>
+        <li><b>Experiments 1–3:</b> 5 tracks matching the AI styles above.</li>
+        <li><b>Experiments 4–5:</b> 5 tracks with vocals: house-pop, club, R&amp;B, synthpop, dubstep.</li>
+        <li>All released under <b>Creative Commons</b> on netlabels and ccMixter, <b>before AI music generators existed</b>, so they are certainly human.</li>
+        <li>Little-known artists, so a model can't simply recognise a famous song.</li>
+      </ul>
+    </div>
+  </div>
 </div>
+</section>
 
-<h2>1. The question</h2>
-<p>People already upload songs to chat assistants and ask "is this AI?". We want to know whether the answers mean anything: can the model detect AI music, is its confidence honest, and what is it actually basing the verdict on?</p>
-<p>Ten tracks, as five style-matched pairs: 5 made by <b>Suno v5 / v5.5</b> (2026) and 5 <b>human</b> tracks from Creative Commons netlabels and ccMixter, all released before 2022 (lo-fi chillhop, UK garage / house-pop, jazzy trap, afro house, dub techno). These are deliberately hard pairs: the project owner can't reliably tell them apart by ear either.</p>
-
-<h2>2. The difficulty ladder</h2>
-<p>Each level removes giveaways from the level above. Detection that works on L0 but fails on L4 tells you <i>what</i> the model was relying on.</p>
-<div class="tw"><table>
-<tr><th>Level</th><th>What the model gets</th><th>What still gives it away</th><th>Status</th></tr>
-<tr><td><b>L0 Raw</b></td><td>The original file, renamed to a random ID</td><td>Everything. Suno files carry the tag <code>comment: made with suno; created 2026-…</code>, are 48 kHz, quieter and newly encoded. Human files carry artist, album, year (2009–2019), cover art and old encoders</td><td class="good">Done, all 3 models</td></tr>
-<tr><td>L1 No tags</td><td>Tags stripped, audio untouched</td><td>Encoder fingerprints, sample rate (48 vs 44.1 kHz), bitrate, length, loudness</td><td class="todo">Not run</td></tr>
-<tr><td><b>L2 Same format</b></td><td>Everything re-encoded the same way (44.1 kHz, 192 kbps), <i>no</i> 15 kHz cap</td><td>Track length, loudness, natural frequency ceiling</td><td class="good">Done, all 3 models</td></tr>
-<tr><td>L3 Capped</td><td>L2 plus a 15 kHz low-pass on every file</td><td>Track length, loudness</td><td class="todo">Not run</td></tr>
-<tr><td><b>L4 Clip</b></td><td>30 s clip from 25% into the track, loudness-matched to −16 LUFS, faded in and out (the pilot condition)</td><td>Only the sound itself</td><td class="good">Done, all 3 models</td></tr>
-</table></div>
-<p class="note">Note on the human files: they are actually <i>louder</i> than the Suno files (−7.5 to −11.7 LUFS against about −14), so a model that reasons "loud and compressed means AI" would get L2 backwards.</p>
-
-<h2>3. How each test works (with an example)</h2>
-<p>Every file goes into a fresh chat (temporary, or memory off), and the chat has two turns.</p>
-<p><b>Turn 1, describe.</b> AI is not mentioned. This checks whether the model can perceive the file at all. It asks for tempo, key, instruments, vocals, duration, sample rate, bitrate, embedded tags, loudness and frequency ceiling, plus <i>how</i> the model accessed the audio ("listened directly", "code analysis only", …).</p>
-<p><b>Turn 2, verdict.</b> In the same chat, the model is told the file is either AI-generated or human-made and asked for a JSON verdict, a confidence of 50–100, whether it recognised the song, the main basis for the verdict and up to five pieces of evidence.</p>
-
-<h3>Example: one Suno track (afro house, 4 min 8 s) as a raw file (L0)</h3>
-<div class="ex">
-<div><h4>ChatGPT (code)</h4>
-<pre>Turn 1: accessed "both" (code + audio player)
-  sample rate 48000 Hz, 196 kbps, -13.6 LUFS
-  embedded_metadata: comment "made with suno;
-  created 2026-05-24T17:58:59Z; id …"
-Turn 2: {"verdict": "AI", "confidence": 99,
-  "main_basis": "embedded metadata",
-  "evidence": ["Embedded comment explicitly
-  states: 'made with suno …'", …]}</pre>
-<span class="good">Correct, but it read the label rather than hearing the music.</span></div>
-<div><h4>Gemini (listening)</h4>
-<pre>Turn 1: accessed "listened directly"
-  genre "Afro House / Tribal House"
-  duration 156 s (actual: 248 s)
-  sample rate, bitrate, tags: null
-Turn 2: {"verdict": "HUMAN", "confidence": 88,
-  "main_basis": "musical content",
-  "evidence": ["Clean, crisp transient
-  separation …", "authentic groove, natural
-  velocity humanization …"]}</pre>
-<span class="bad">Wrong, and confidently so. It never sees the tag.</span></div>
+<!-- ============ RESULTS ============ -->
+<section id="results">
+<div class="wrap">
+  <div class="kicker"><b>02</b> Results</div>
+  <h2>Correct verdicts out of 10 songs</h2>
+  <p class="sub">Each row is one experiment and each column one chat app. <b>Click any cell</b> to see every song, the model's verdict and its main reason.</p>
+  <div class="res">
+    <div style="overflow-x:auto">
+    <table class="grid" id="grid">
+      <thead><tr><th>Experiment: what the model got</th><th class="m">ChatGPT</th><th class="m">Claude</th><th class="m">Gemini</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+    <aside class="legend">
+      <h3>How to read it</h3>
+      <div class="row"><div class="chip hi">10</div><div><b>9–10:</b> reliably right (guessing gets here about 1 time in 100)</div></div>
+      <div class="row"><div class="chip mid">5</div><div><b>4–7:</b> a coin flip. Pure guessing on 10 songs lands here about 3 times in 4</div></div>
+      <div class="row"><div class="chip lo">2</div><div><b>0–3:</b> worse than guessing</div></div>
+      <div class="row"><div class="chip" style="border-style:dashed;color:var(--mut)">–</div><div>not run</div></div>
+      <p class="small" style="margin:12px 0 0">Experiments 1→3 remove giveaways one by one. 4 and 5 swap in AI songs that should be easier to spot. Full details are in <a href="#how">How it was done</a>.</p>
+    </aside>
+  </div>
+  <ul class="notes">
+    <li><b>"Detection" is reading the label.</b> ChatGPT and Claude open the file with code and find <code>made with suno</code> or the artist's tags. Remove the tags (experiment 2) and they <b>drop straight to chance</b>, mostly answering "AI" for everything.</li>
+    <li><b>Gemini is the only one that listens</b>, and it scores about 6/10 at every level. It leans "human" and justifies it with stock phrases like <i>"clean transients, natural groove"</i>.</li>
+    <li><b>Experiment 4 looked like a breakthrough:</b> Gemini ranked <b>every AI song above every human one</b>. But it cited the lyrics every time, and those lyrics were AI-written, often about AI. With <b>human-written lyrics (experiment 5)</b> the same kind of AI music <b>fell to chance</b>.</li>
+    <li><b>ChatGPT sounds as if it listens but doesn't.</b> It said "no vocals" on 7 of 10 songs with vocals and called a hip-hop beat "cinematic orchestral".</li>
+    <li><b>High frequencies didn't help.</b> In a side test, a human song played at full quality was still called AI by all three models (<a href="#freq">details</a>).</li>
+  </ul>
 </div>
-<p class="note">Same file, two separate chats. Answers are trimmed; full text is in <code>results/ladder_raw_log.jsonl</code>.</p>
+</section>
 
-<h2>4. Results</h2>
-<h3>The ladder: how detection changes as giveaways are removed</h3>
-<div class="tw"><table>
-<tr><th>Level</th><th>Model</th><th>Correct</th><th>AI caught</th><th>Human called AI</th><th>Brier ↓</th><th>AUROC</th><th>Confidence</th><th>Main basis it gave</th></tr>
-<tr><td rowspan="3"><b>L0 Raw</b></td><td>ChatGPT</td><td class="n good">10 / 10</td><td class="n">5 / 5</td><td class="n">0 / 5</td><td class="n good">0.014</td><td class="n">1.00</td><td class="n">68–99%</td><td>embedded metadata (9)</td></tr>
-<tr><td>Claude</td><td class="n good">10 / 10</td><td class="n">5 / 5</td><td class="n">0 / 5</td><td class="n good">0.004</td><td class="n">1.00</td><td class="n">90–97%</td><td>embedded metadata (10)</td></tr>
-<tr><td>Gemini</td><td class="n warn">6 / 10</td><td class="n bad">1 / 5</td><td class="n">0 / 5</td><td class="n">0.230</td><td class="n">0.82</td><td class="n">50–95%</td><td>musical content (9)</td></tr>
-<tr><td rowspan="3"><b>L2 Same format</b></td><td>ChatGPT</td><td class="n bad">4 / 10</td><td class="n">4 / 5</td><td class="n bad">5 / 5</td><td class="n">0.267</td><td class="n">0.28</td><td class="n">50–62%</td><td>musical content (6), nothing usable (4)</td></tr>
-<tr><td>Claude</td><td class="n warn">7 / 10</td><td class="n">5 / 5</td><td class="n bad">3 / 5</td><td class="n">0.221</td><td class="n">0.88</td><td class="n">55–62%</td><td>technical properties (10)</td></tr>
-<tr><td>Gemini</td><td class="n warn">6 / 10</td><td class="n bad">2 / 5</td><td class="n">1 / 5</td><td class="n">0.258</td><td class="n">0.82</td><td class="n">50–92%</td><td>musical content (8)</td></tr>
-<tr><td rowspan="3"><b>L4 Clip</b></td><td>ChatGPT</td><td class="n warn">5 / 10</td><td class="n">5 / 5</td><td class="n bad">5 / 5</td><td class="n">0.258</td><td class="n">0.44</td><td class="n">56–62%</td><td>musical content (10)</td></tr>
-<tr><td>Claude</td><td class="n warn">6 / 10</td><td class="n">5 / 5</td><td class="n bad">4 / 5</td><td class="n">0.230</td><td class="n">0.90</td><td class="n">52–60%</td><td>technical properties (9)</td></tr>
-<tr><td>Gemini</td><td class="n warn">6 / 10</td><td class="n bad">2 / 5</td><td class="n">1 / 5</td><td class="n bad">0.283</td><td class="n">0.58</td><td class="n">50–92%</td><td>musical content (7)</td></tr>
-</table></div>
-<p class="note"><b>How to read it.</b> <b>Brier</b> is the mean squared error of the stated probability. 0.25 is what you get by always answering 50%, so anything near or above 0.25 is no better than not answering. <b>AUROC</b> asks whether AI tracks got higher "AI" probabilities than human ones (0.5 = chance). With 10 tracks per cell every number has wide error bars.</p>
+<!-- ============ CHART ============ -->
+<section class="alt">
+<div class="wrap">
+  <div class="kicker"><b>03</b> At a glance</div>
+  <h2>Only the tags ever lifted a model clear of chance</h2>
+  <div class="chartbox">
+    <div class="chartlegend">
+      <span><span class="sw" style="background:var(--m-chatgpt)"></span>ChatGPT</span>
+      <span><span class="sw" style="background:var(--m-claude)"></span>Claude</span>
+      <span><span class="sw" style="background:var(--m-gemini)"></span>Gemini</span>
+      <span class="c-mut">Shaded band: the coin-flip range (4–7 of 10)</span>
+    </div>
+    <svg id="chart" viewBox="0 0 760 300" role="img" aria-label="Correct verdicts out of 10 for each model across experiments 1 to 5"></svg>
+    <div class="tip" id="tip"></div>
+  </div>
+</div>
+</section>
 
-<h3>What happens at each step</h3>
-<ul>
-<li><b>L0 → L2 (tags and format removed):</b> ChatGPT and Claude lose their only reliable evidence. ChatGPT drops from 10/10 to 4/10 and says "AI" for 9 of 10 files. Claude drops to 7/10. Two of its correct "human" calls cite the track length ("9:29 long, longer than a typical generation"), which is a real leak at L2.</li>
-<li><b>L2 → L4 (cut to 30 s, loudness-matched):</b> ChatGPT says "AI" for all 10 clips (5/10). Claude says "AI" for 9 of 10 (6/10). Neither moves meaningfully.</li>
-<li><b>Gemini barely changes across levels (6/10 everywhere)</b>, as expected for a model that never reads the file's metadata. It leans "HUMAN" and justifies it with generic phrases ("clean transients", "natural groove").</li>
-<li><b>Claude's AUROC of 0.88–0.90</b> at L2/L4 means its confidence was slightly higher on AI tracks than on human ones. Its confidence only ranged from 52% to 62%, though, so this is a faint ranking signal on 10 tracks, not usable detection.</li>
-</ul>
+<!-- ============ STORIES ============ -->
+<section id="stories">
+<div class="wrap">
+  <div class="kicker"><b>04</b> Four songs that tell the story</div>
+  <h2>Two AI songs and two human songs from the test</h2>
+  <p class="sub">Each chip is one verdict: experiment number, model, verdict and confidence. Green means right, red means wrong.</p>
+  <div class="stories" id="storybox"></div>
+</div>
+</section>
 
-<h3>Turn 1: can the model perceive the file?</h3>
-<div class="tw"><table>
-<tr><th>Model</th><th>How it says it accessed the audio</th><th>Sample rate right</th><th>Median duration error</th><th>Found the Suno tag (L0)</th><th>"Could not access"</th></tr>
-<tr><td>ChatGPT</td><td>"both": Python (ffprobe, librosa) plus an audio player</td><td class="n good">30 / 30</td><td class="n good">0 s</td><td class="n good">5 / 5</td><td class="n">0 / 30</td></tr>
-<tr><td>Claude</td><td>"code analysis only"; it says it cannot listen</td><td class="n good">30 / 30</td><td class="n good">0 s</td><td class="n good">5 / 5</td><td class="n">0 / 30</td></tr>
-<tr><td>Gemini</td><td>"listened directly"; no code tool</td><td class="n bad">1 / 30</td><td class="n bad">91 s (L0) · 129 s (L2) · 14 s on 30 s clips</td><td class="n bad">0 / 5</td><td class="n bad">6 / 30</td></tr>
-</table></div>
-<p>Gemini's descriptions sound plausible (genres, instruments, vocal lines), but its basic facts are wrong. On 30-second clips it reported durations from 15 to 127 seconds. On one full track it invented 320 kbps and a 20 kHz ceiling (the file was 192 kbps). In 6 of 30 chats it said it "could not access" a file that had attached correctly. 5 of those 6 were Suno tracks, two of those Suno tracks failed at more than one level, and one-off retries failed the same way. That pattern is worth checking, but 6 cases can't establish a cause.</p>
+<div class="divider"><p>That is the result. Everything below is the how.</p><span>Optional reading · experiments in detail, the prompt, cost, caveats, files</span></div>
 
-<h3>Comparison with the pilot (the hardest level)</h3>
-<div class="tw"><table>
-<tr><th>Model</th><th>Pilot: 30 s clip, verdict only</th><th>Run 2, L4: describe first, then verdict</th></tr>
-<tr><td>ChatGPT</td><td class="n">5 / 10 (all "AI")</td><td class="n">5 / 10 (all "AI")</td></tr>
-<tr><td>Claude</td><td class="n">4 / 10</td><td class="n">6 / 10</td></tr>
-<tr><td>Gemini</td><td class="n">4 / 10 (3.8 Flash)</td><td class="n">6 / 10 (current Flash; a different model)</td></tr>
-</table></div>
-<p>Describing the file first did not make any model better at detection.</p>
+<!-- ============ HOW ============ -->
+<section id="how" class="how">
+<div class="wrap">
+  <div class="kicker"><b>05</b> How it was done</div>
+  <h2>The five experiments</h2>
+  <p class="sub">Experiments 1–3 use the same 10 songs and remove one kind of giveaway at a time. Experiments 4–5 change the songs instead, to give the models their best chance.</p>
+  <div class="tw"><table class="plain">
+    <tr><th>#</th><th>What the model got</th><th>What could still give it away</th><th>Models</th></tr>
+    <tr><td>1</td><td><b>The original file</b>, renamed to a random ID</td><td>Everything. AI files carry the tag <code>made with suno</code>; human files carry artist, album and year (2009–2019)</td><td>All 3</td></tr>
+    <tr><td>2</td><td><b>Same song, cleaned</b>: tags stripped, every file re-encoded to the same format (44.1 kHz, 192 kbps MP3)</td><td>Song length and loudness</td><td>All 3</td></tr>
+    <tr><td>3</td><td><b>A 30-second clip</b>, volume-matched, with a short fade in and out</td><td>Only the sound itself</td><td>All 3</td></tr>
+    <tr><td>4</td><td><b>Easier AI</b>: 5 older-generator songs with vocals (Suno v3.5, Udio), AI-written lyrics, against 5 human vocal songs. All 30 s, same quality (16 kHz mono, because that is all the AI dataset provides)</td><td>The sound, and the AI-written lyrics</td><td>All 3</td></tr>
+    <tr><td>5</td><td>As 4, but the 5 AI songs have <b>lyrics written by people</b> (Suno v3.5). Scored against Gemini's answers on the same 5 human songs from experiment 4</td><td>Only the sound</td><td>Gemini</td></tr>
+  </table></div>
+  <p class="small">An earlier pilot on the same 10 songs ran only the experiment 3 condition (single turn, plus variants with full songs and ChatGPT's thinking mode). Every variant landed at chance, which is what prompted this graded design.</p>
 
-<h2>5. Round 3: vocal tracks from older generators</h2>
-<p>Run 2 suggested vocals are where AI is audible: the only Suno track Gemini caught was a vocal one. So this round swaps in AI songs that should be <i>easier</i> to spot: 5 fully generated vocal songs (music and lyrics) from the <b>SONICS</b> dataset (2024, Suno v3.5 and Udio), each paired by style with a human Creative Commons vocal track (house-pop, club, R&amp;B, synthpop, dubstep).</p>
-<p><b>Same quality for every file.</b> SONICS only ships 16 kHz mono audio, so all 10 files were brought to the same format. The human tracks also went through one low-bitrate MP3 pass to match the AI files' compression damage. Then all 10 were cut to 30 s clips at 16 kHz mono, 64 kbps, −16 LUFS, with no fades and no low-pass. The format is therefore identical, and only the music differs.</p>
-<div class="tw"><table>
-<tr><th>Model</th><th>Correct</th><th>AI caught</th><th>Human called AI</th><th>Brier ↓</th><th>AUROC</th><th>Confidence</th><th>Heard vocals (Turn 1)</th></tr>
-<tr><td>Gemini</td><td class="n good">7 / 10</td><td class="n good">5 / 5</td><td class="n bad">3 / 5</td><td class="n">0.206</td><td class="n good">1.00</td><td class="n">75–98%</td><td class="n">10 / 10</td></tr>
-<tr><td>Claude</td><td class="n warn">6 / 10</td><td class="n">5 / 5</td><td class="n bad">4 / 5</td><td class="n">0.251</td><td class="n">0.40</td><td class="n">52–55%</td><td class="n">"unsure" 10 / 10</td></tr>
-<tr><td>ChatGPT</td><td class="n warn">5 / 10</td><td class="n">4 / 5</td><td class="n bad">4 / 5</td><td class="n">0.247</td><td class="n">0.72</td><td class="n">55–60%</td><td class="n bad">2 / 10</td></tr>
-</table></div>
-<ul>
-<li><b>Gemini is the first model in this study to show a real signal.</b> Every AI song got a higher "AI" probability (92–98%) than every human song (12–85%), so AUROC is 1.00. A cut-off at about 90% would have separated all 10 correctly. At its own 50% cut-off, though, it still called 3 of 5 human songs AI at 75–85%.</li>
-<li><b>But it may be reading the lyrics, not hearing artefacts.</b> In all 5 of its AI calls Gemini cited the lyrics, and SONICS' fully generated songs have AI-written lyrics that are often about AI itself ("digital dance", "random seeds", "transformer"). It also cited audio artefacts ("metallic smearing", "formant warping"), but it used the same phrases on human songs it called AI, so those phrases don't distinguish anything. With instrumental Suno tracks in run 2 it was at chance.</li>
-<li><b>ChatGPT doesn't hear the vocals.</b> In Turn 1 it said "no vocals" for 7 of 10 vocal clips and called most of them generic electronic instrumentals. Its verdicts were "AI" at 55–60% almost every time, as before.</li>
-<li><b>Claude can't listen</b> and said so; its answers were 52–55% coin flips.</li>
-</ul>
+  <h3 style="margin-top:26px">Each test is a two-turn chat</h3>
+  <ul>
+    <li><b>Turn 1, describe the file</b> (AI is not mentioned): tempo, instruments, vocals, length, sample rate, any tags, and how the model accessed the audio ("listened", "code analysis", ...). This shows whether it can perceive the file at all.</li>
+    <li><b>Turn 2, the verdict</b>, in the same chat: "AI" or "human", a confidence from 50 to 100%, the main basis for the decision and up to five pieces of evidence.</li>
+    <li>Fresh chat per song (temporary chat, or memory off). ChatGPT: Think off. Claude: Sonnet 5.5, medium effort. Gemini: Flash.</li>
+  </ul>
+  <div class="ex2">
+    <div><b class="small">Example, experiment 1, ChatGPT</b><pre>Turn 1: accessed "both" (code + player)
+  embedded_metadata: "made with suno; ..."
+Turn 2: AI, 99%, basis "embedded metadata"</pre></div>
+    <div><b class="small">Same song, Gemini</b><pre>Turn 1: accessed "listened directly"
+  length 156 s (actual 248 s), tags: null
+Turn 2: HUMAN, 88%, basis "musical content"
+  "authentic groove, natural humanization"</pre></div>
+  </div>
 
-<h3>Follow-up: was it the lyrics? (18 Oct)</h3>
-<p>To separate sound from lyrics, Gemini was given 5 more AI songs from SONICS whose <b>lyrics were written by people</b> (Suno v3.5 music, real-song lyrics), built exactly the same way and matched to the same 5 styles. They were scored against Gemini's answers on the same 5 human clips from round 3.</p>
-<div class="tw"><table>
-<tr><th>AI songs given to Gemini</th><th>AI caught</th><th>"AI" probability on the AI songs</th><th>AUROC against the same human songs</th></tr>
-<tr><td>AI-written lyrics (round 3)</td><td class="n good">5 / 5</td><td class="n">92–98%</td><td class="n good">1.00</td></tr>
-<tr><td>Human-written lyrics (follow-up)</td><td class="n bad">2 / 5</td><td class="n">12–88%</td><td class="n bad">0.52</td></tr>
-</table></div>
-<p><b>Result: the signal disappears.</b> Once the lyrics are human-written, Gemini calls 3 of 5 AI songs human at 75–88% and ranks AI songs no better than chance. It still cited "phasey smearing" and "natural breath dynamics", the same phrases it used everywhere. Gemini's round-3 success came from recognising AI-written lyrics, not from hearing AI audio. (All 5 follow-up songs are Suno; SONICS has no Udio songs with human lyrics.)</p>
+  <h3 style="margin-top:26px">Can the models perceive the file? (turn 1, experiments 1–3)</h3>
+  <div class="tw"><table class="plain">
+    <tr><th>Model</th><th>How it accessed the audio</th><th>Sample rate right</th><th>Typical length error</th><th>Said "could not access"</th></tr>
+    <tr><td>ChatGPT</td><td>Python (ffprobe, librosa) plus a player</td><td class="n">30 / 30</td><td class="n">0 s</td><td class="n">0</td></tr>
+    <tr><td>Claude</td><td>Code only; says it cannot listen</td><td class="n">30 / 30</td><td class="n">0 s</td><td class="n">0</td></tr>
+    <tr><td>Gemini</td><td>Listens; no code</td><td class="n c-bad">1 / 30</td><td class="n c-bad">91–129 s</td><td class="n c-bad">6 / 30</td></tr>
+  </table></div>
+  <p class="small">Gemini's "could not access" answers clustered on Suno files and repeated on retry; they are scored as given (50% confidence).</p>
 
-<h3>Frequency test: do high frequencies make a model say "human"?</h3>
-<p>One pair, two files, with the frequency ceiling as the only intended difference. The AI song (Suno v3.5, source limited to 8 kHz) and its human partner (h03, full bandwidth to about 16 kHz) were both cut to 30 s and encoded as 44.1 kHz stereo 192 kbps MP3 at −16 LUFS.</p>
-<div class="tw"><table>
-<tr><th>Model</th><th>AI file (nothing above 8 kHz)</th><th>Human file (full bandwidth)</th><th>Did it notice the difference?</th></tr>
-<tr><td>Claude</td><td class="n">AI 57%</td><td class="n bad">AI 55%</td><td>Yes. It measured "energy stops at about 8 kHz" on the AI file, but moved only 2 points. It read the human file's 15.7 kHz cutoff as a sign of lossy encoding</td></tr>
-<tr><td>ChatGPT</td><td class="n">AI 58%</td><td class="n bad">AI 58%</td><td>No. It reported no frequency ceiling for either file</td></tr>
-<tr><td>Gemini</td><td class="n">AI 92%</td><td class="n bad">AI 88%</td><td>No mention. At full bandwidth the human song still sounded "AI" to it (85% at 16 kHz in the vocal round, 88% here)</td></tr>
-</table></div>
-<p><b>Result: no.</b> Full high-frequency content did not make any model call the human song human. The models either didn't measure it or didn't treat it as evidence of human origin. This is a 2-file check, so it rules out "high frequencies are a strong cue for these models", not a weak effect.</p>
+  <h3 id="freq" style="margin-top:26px">Side test: do high frequencies sound "human"?</h3>
+  <p class="sub">One AI song (nothing above 8 kHz) and one human song (full range to about 16 kHz), otherwise identical: 30 s, 44.1 kHz stereo, same loudness.</p>
+  <div class="tw"><table class="plain">
+    <tr><th>Model</th><th>AI song</th><th>Human song</th><th>Noticed the difference?</th></tr>
+    <tr><td>Claude</td><td class="n">AI 57%</td><td class="n c-bad">AI 55%</td><td>Measured the 8 kHz ceiling, but moved only 2 points</td></tr>
+    <tr><td>ChatGPT</td><td class="n">AI 58%</td><td class="n c-bad">AI 58%</td><td>Didn't measure it</td></tr>
+    <tr><td>Gemini</td><td class="n">AI 92%</td><td class="n c-bad">AI 88%</td><td>No mention</td></tr>
+  </table></div>
 
-<h2>6. Time, tokens and cost</h2>
-<div class="tw"><table>
-<tr><th>Model (app, plan)</th><th>Median time per chat (both turns)</th><th>Est. input tokens per chat</th><th>Est. output tokens per chat</th><th>Illustrative cost per chat</th></tr>
-<tr><td>ChatGPT (chatgpt.com, Go, Think off)</td><td class="n">≈ 1¾ – 2½ min</td><td class="n">≈ 2,500</td><td class="n">≈ 2,500</td><td class="n">≈ $0.045</td></tr>
-<tr><td>Claude (claude.ai, Pro, Sonnet 5.5 Medium)</td><td class="n">≈ 1 – 1½ min</td><td class="n">≥ 1,200</td><td class="n">≥ 650</td><td class="n">≥ $0.013</td></tr>
-<tr><td>Gemini (gemini.google.com, Flash)</td><td class="n">≈ 40 s</td><td class="n">≈ 19,000 full track<br>≈ 2,900 clip</td><td class="n">≈ 300–400</td><td class="n">≈ $0.06 full<br>≈ $0.013 clip</td></tr>
-</table></div>
-<p><b>How these were estimated.</b> The consumer apps don't show token counts, so these are reconstructed from the text on the page (about 4 characters per token). They cover the prompts, both answers and, for ChatGPT, the code it ran and printed. Turn 2 re-sends the whole conversation, so its input includes Turn 1.</p>
-<ul>
-<li><b>Gemini</b> processes the audio itself. Audio is counted at Gemini's published API rate of 32 tokens per second, sent with both turns. That is why full tracks cost far more than clips.</li>
-<li><b>ChatGPT and Claude</b> never put the audio into the model. It sits in a code sandbox, so it costs no tokens. Claude hides its tool calls in the page, so its figures are lower bounds. Hidden reasoning tokens are not counted for anyone.</li>
-<li><b>Cost</b> is illustrative only: tokens priced at $3 per million input and $15 per million output, one rate for all three, <i>not</i> checked against any provider's current price list. At that rate, 1,000 files would cost roughly $45 (ChatGPT), $13+ (Claude) or $13–$60 (Gemini, clip vs full track). A real figure needs the same test run through each provider's API, which logs tokens per request.</li>
-</ul>
-<p class="note">Token estimates come from 50 of the 90 chats (all of L2, plus L4 for ChatGPT and Gemini). Length capture was added after L0 and Claude's L4 had run. The runs themselves cost nothing beyond the existing subscriptions.</p>
+  <h3 style="margin-top:26px">Time and cost</h3>
+  <div class="tw"><table class="plain">
+    <tr><th>Model</th><th>Time per chat</th><th>Tokens per chat (estimated)</th><th>Illustrative cost per chat</th></tr>
+    <tr><td>ChatGPT</td><td class="n">≈ 2 min</td><td class="n">≈ 2,500 in · 2,500 out</td><td class="n">≈ $0.045</td></tr>
+    <tr><td>Claude</td><td class="n">≈ 1–1.5 min</td><td class="n">≥ 1,200 in · 650 out</td><td class="n">≥ $0.013</td></tr>
+    <tr><td>Gemini</td><td class="n">≈ 40 s</td><td class="n">≈ 2,900 (clip) – 19,000 (full song) in · 350 out</td><td class="n">≈ $0.013 – $0.06</td></tr>
+  </table></div>
+  <ul>
+    <li>The chat apps don't show token counts, so tokens are estimated from the text on the page (about 4 characters per token). Gemini turns the audio itself into tokens (32 per second, sent with both turns); ChatGPT and Claude keep the audio in a code sandbox.</li>
+    <li>Cost uses one illustrative rate, $3 per million tokens in and $15 per million out, not any provider's price list. The runs themselves cost nothing beyond existing subscriptions.</li>
+  </ul>
 
-<h2>7. What this means</h2>
-<ol>
-<li><b>"Detection" by ChatGPT and Claude is metadata reading.</b> Given the raw file, both open it with code, find <code>made with suno</code> or a 2009–2019 artist tag, and answer with 90–99% confidence. Once the tags are gone they drop to chance (4–7/10) and mostly default to "AI".</li>
-<li><b>Claude is honest about it.</b> In nearly every answer it says it cannot listen and that its verdict rests on tags or weak technical cues. Its confidence stays at 52–62% when it has nothing, which is well calibrated.</li>
-<li><b>ChatGPT sounds as if it listened, but its answers don't support that.</b> On clean files it writes about "repetitive motifs" and "polished synth timbres" and says "AI" almost every time, including on human tracks. At L2 it called a human jazzy-trap beat "cinematic orchestral".</li>
-<li><b>Gemini is the only model that listens, and listening alone didn't work.</b> It got 6/10 at every level, misses most Suno tracks with 75–92% confidence, gets basic facts like track length wrong, and sometimes can't process a file at all.</li>
-<li><b>Our own cleanup leaks into the evidence.</b> At L4, Claude repeatedly cites the 15 kHz cutoff and the fade that our sanitiser adds to every file. At L2, with no cap, it used track length instead. These cues are identical for AI and human files, or only weakly related to them, so they can't support real detection.</li>
-<li><b>With older, vocal AI songs, Gemini seemed to separate AI from human</b> (all 5 caught, perfect ranking), <b>but that came from the AI-written lyrics.</b> With human-written lyrics on the same kind of AI music it fell to chance (AUROC 0.52). ChatGPT and Claude stayed at chance throughout. High frequencies did not push any model towards "human".</li>
-<li><b>Practical takeaway:</b> "Is this AI?" answers from chat assistants are only reliable when the file still carries its provenance tags, and then a simple tag reader would do the same job. On clean audio of current generators (Suno v5), none of them detects AI music better than chance. Across every condition tested, no model detected AI music from the sound itself; the only detections came from file tags or AI-written lyrics.</li>
-</ol>
+  <h3 style="margin-top:26px">Caveats</h3>
+  <ul>
+    <li><b>Small:</b> 10 songs per experiment, one run each. This is a smoke test, not a precise measurement.</li>
+    <li><b>Consumer apps:</b> model versions are chosen by the app and can change without notice.</li>
+    <li><b>Our processing shows up in the evidence:</b> in experiment 3 Claude cited the low-pass filter and the fade that our clean-up adds to every clip. These are identical for AI and human songs, so they can't help, but they do distort the reasoning.</li>
+    <li><b>Experiments 4–5</b> use 16 kHz mono audio for every file, and experiment 5 is all Suno (the dataset has no Udio songs with human lyrics).</li>
+    <li>Vocal/instrumental labels come from metadata and weren't checked by ear. A few chats were redone after upload failures; this is noted in the logs.</li>
+  </ul>
 
-<h2>8. Caveats</h2>
-<ul>
-<li>10 tracks and one run per item. This is a smoke test, not a measurement.</li>
-<li>Gemini's app now shows "Gemini 4" with the mode picker on Flash. That differs from the 3.8 Flash used in the pilot, so Gemini isn't directly comparable across runs.</li>
-<li>Some chats were redone after technical failures: a frozen tab, a misrouted upload, and a ChatGPT upload that failed twice. One Claude chat was resumed after a pause. Gemini's "could not access" answers are scored as given (50%). One-off retries, which failed again, are in <code>results/ladder_retries.jsonl</code>.</li>
-<li>Human tracks were chosen from metadata; vocal and instrumental labels haven't been checked by ear.</li>
-<li>Round 3 changes two things at once (older generators and vocals), and every file there is 16 kHz mono, which hides high-frequency detail for everyone. The SONICS songs have AI-written lyrics, which is a content cue, not an audio one.</li>
-</ul>
+  <h3 style="margin-top:26px">Reproduce</h3>
+  <ul>
+    <li>Prompts: <code>prompts/</code>. Building the files: <code>scripts/make_levels.sh</code>, <code>scripts/make_vocal_round.sh</code>, <code>scripts/make_vocal_hf.sh</code>, <code>scripts/make_freq_test.sh</code>.</li>
+    <li>Running the chats in the browser: <code>scripts/browser/</code>. Scoring: <code>scripts/score_ladder.py</code>, <code>scripts/score_vocal.py</code>. This page's data: <code>scripts/build_page_data.py</code> → <code>docs/data.js</code>.</li>
+    <li>Every answer, both turns: <code>results/*_raw_log.jsonl</code>. Audio and answer keys stay out of the repository.</li>
+  </ul>
+</div>
+</section>
 
-<h2>9. Next steps</h2>
-<ol>
-<li>Drop the 15 kHz low-pass and fades from the clip level, so the models' "evidence" isn't our own processing. Optionally run L1 (tags stripped only) to see whether 48 kHz and encoder fingerprints alone are enough for the code-using models.</li>
-<li>Move to API runs with native-audio models for real listening tests and exact token costs.</li>
-<li>Scale up from 10 to 40+ tracks with 3 runs per item before ranking any model.</li>
-<li>Check Gemini's "could not access" failures, which clustered on Suno files.</li>
-<li><s>Separate lyrics from sound</s>: done on 18 Oct. Gemini's signal did not survive.</li>
-</ol>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="box">
+  <div class="mh"><div><h3 id="mtitle"></h3><div class="small" id="msub"></div></div><button class="x" id="mclose">Close ✕</button></div>
+  <div style="overflow-x:auto"><table><thead><tr><th>Song</th><th>Truth</th><th>Verdict</th><th></th><th>Main reason given</th></tr></thead><tbody id="mbody"></tbody></table></div>
+</div></div>
 
-<h2>Files</h2>
-<ul>
-<li><code>LEVELS_PLAN.md</code>: the ladder design and prompts</li>
-<li><code>results/ladder_raw_log.jsonl</code>: every Turn 1 and Turn 2 answer from run 2</li>
-<li><code>results/ladder_summary.json</code>, <code>scripts/score_ladder.py</code>: the numbers on this page and how they are computed</li>
-<li><code>results/ladder_runsheet.csv</code>: shuffled run order</li>
-<li><code>results/vocal_hf_raw_log.jsonl</code>, <code>results/vocal_hf_summary.json</code>, <code>scripts/make_vocal_hf.sh</code>: the lyrics follow-up</li>
-<li><code>results/vocal_raw_log.jsonl</code>, <code>results/freq_raw_log.jsonl</code>, <code>results/vocal_summary.json</code>, <code>scripts/make_vocal_round.sh</code>, <code>scripts/make_freq_test.sh</code>, <code>scripts/score_vocal.py</code>: round 3 and the frequency test</li>
-<li><code>results/pilot_report.md</code>: the 12 Oct pilot</li>
-<li><code>scripts/make_levels.sh</code>, <code>scripts/browser/</code>: how the files and runs are produced</li>
-</ul>
-<p class="note">Audio files and the answer key are kept out of the repository.</p>
+<script src="data.js"></script>
+<script>
+const D = window.BENCH;
+const MODELS = [["chatgpt","ChatGPT"],["claude","Claude"],["gemini","Gemini"]];
+const EXPS = [
+  ["1","Original file","Tags and metadata still in the file"],
+  ["2","Clean file, full song","Tags removed, same format for all"],
+  ["3","30-second clip","Also volume-matched"],
+  ["4","Easier AI: older generators, with vocals","AI-written lyrics"],
+  ["5","As 4, with human-written lyrics","Gemini only"],
+];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-</main>
+// results grid
+const tb = document.querySelector("#grid tbody");
+EXPS.forEach(([n, t, s]) => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td class="ex"><b><span class="no">${n}</span>${t}</b><span>${s}</span></td>`;
+  MODELS.forEach(([m, label]) => {
+    const td = document.createElement("td");
+    const sum = D.summary[`${n}|${m}`];
+    if (!sum) { td.innerHTML = `<div class="cell na">not run</div>`; }
+    else {
+      const cls = sum.correct >= 9 ? "hi" : sum.correct <= 3 ? "lo" : "";
+      const b = document.createElement("button");
+      b.className = "cell " + cls;
+      b.innerHTML = `${sum.correct}<small>of ${sum.n}</small>`;
+      b.setAttribute("aria-label", `${label}, experiment ${n}: ${sum.correct} of ${sum.n} correct. Show songs`);
+      b.onclick = () => openCell(n, m, label, t);
+      td.appendChild(b);
+    }
+    tr.appendChild(td);
+  });
+  tb.appendChild(tr);
+});
+
+// modal
+const modal = document.getElementById("modal");
+function openCell(n, m, label, t) {
+  const items = D.cells[`${n}|${m}`];
+  const sum = D.summary[`${n}|${m}`];
+  document.getElementById("mtitle").textContent = `${label} · Experiment ${n}: ${t}`;
+  document.getElementById("msub").textContent = `${sum.correct} of ${sum.n} correct` + (n === "5" ? " · the 5 human songs are Gemini's answers from experiment 4 (same files)" : "");
+  document.getElementById("mbody").innerHTML = items.map(i => `<tr>
+    <td>${esc(i.track)}</td>
+    <td><span class="tag ${i.truth === "AI" ? "ai" : "hu"}">${i.truth}</span></td>
+    <td class="mono">${i.verdict} ${i.conf}%</td>
+    <td><span class="tag ${i.ok ? "ok" : "bad"}">${i.ok ? "right" : "wrong"}</span></td>
+    <td class="why">${esc(i.why)}</td></tr>`).join("");
+  modal.classList.add("on");
+  document.getElementById("mclose").focus();
+}
+const closeModal = () => modal.classList.remove("on");
+document.getElementById("mclose").onclick = closeModal;
+modal.onclick = e => { if (e.target === modal) closeModal(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+// chart: correct out of 10 by experiment
+(function () {
+  const svg = document.getElementById("chart"), tip = document.getElementById("tip");
+  const W = 760, H = 300, L = 44, R = 96, T = 14, B = 46;
+  const x = i => L + 34 + i * (W - L - R - 34) / 4, y = v => T + (10 - v) * (H - T - B) / 10;
+  const ns = "http://www.w3.org/2000/svg";
+  const el = (tag, a, parent = svg) => { const e = document.createElementNS(ns, tag); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; };
+  el("rect", { x: L, y: y(7), width: W - L - R, height: y(4) - y(7), fill: "#1e2531" });
+  const g = el("g", { class: "grid" });
+  [0, 5, 10].forEach(v => { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v) }, g); const t = el("text", { x: L - 10, y: y(v) + 4, "text-anchor": "end" }); t.textContent = v; });
+  const tc = el("text", { x: W - R + 8, y: y(5) + 4 }); tc.textContent = "chance";
+  ["1 Original", "2 Clean, full", "3 30 s clip", "4 Older AI, vocals", "5 Human lyrics"].forEach((s, i) => { const t = el("text", { x: x(i), y: H - 22, "text-anchor": "middle" }); t.textContent = s; });
+  const yl = el("text", { x: 12, y: T + 2, "text-anchor": "start" }); yl.textContent = "";
+  const colors = { chatgpt: "#3987e5", claude: "#d95926", gemini: "#199e70" };
+  const nudge = { chatgpt: -6, claude: 0, gemini: 6 };
+  MODELS.forEach(([m, label]) => {
+    const pts = [];
+    for (let i = 0; i < 5; i++) { const s = D.summary[`${i + 1}|${m}`]; if (s) pts.push([i, s.correct]); }
+    el("polyline", { points: pts.map(([i, v]) => `${x(i) + nudge[m]},${y(v)}`).join(" "), fill: "none", stroke: colors[m], "stroke-width": 2, "stroke-linejoin": "round" });
+    pts.forEach(([i, v]) => {
+      const c = el("circle", { cx: x(i) + nudge[m], cy: y(v), r: 5, fill: colors[m], stroke: "#131822", "stroke-width": 2 });
+      const hit = el("circle", { cx: x(i) + nudge[m], cy: y(v), r: 13, fill: "transparent", style: "cursor:pointer" });
+      hit.addEventListener("mouseenter", () => {
+        tip.innerHTML = `<b>${label}</b> · experiment ${i + 1}<br>${v} of 10 correct<div class="t">${EXPS[i][1]}</div>`;
+        const box = svg.getBoundingClientRect(), sc = box.width / W;
+        tip.style.left = (svg.offsetLeft + (x(i) + nudge[m]) * sc + 12) + "px";
+        tip.style.top = (svg.offsetTop + y(v) * sc - 10) + "px";
+        tip.style.display = "block"; c.setAttribute("r", 7);
+      });
+      hit.addEventListener("mouseleave", () => { tip.style.display = "none"; c.setAttribute("r", 5); });
+      hit.addEventListener("click", () => openCell(String(i + 1), m, label, EXPS[i][1]));
+    });
+    const [li, lv] = pts[pts.length - 1];
+    const off = { chatgpt: 22, claude: 16, gemini: 18 }[m];
+    const t = el("text", { x: x(li) + nudge[m] + 12, y: y(lv) + off, class: "lbl", fill: "#ece7dc" }); t.textContent = label;
+  });
+})();
+
+// stories
+const STORIES = [
+  { truth: "AI", title: "The AI song everyone caught", who: "Suno v5 · UK garage / house-pop, with vocals",
+    text: "The only current-Suno song caught <b>every time, by every model</b>. It is also the only one of the five with a sung lead vocal. Gemini heard \"metallic smearing\" in the voice. This was the first hint that <b>vocals are where AI is audible</b>, which led to experiments 4 and 5.",
+    v: [["1","ChatGPT","AI",99],["1","Claude","AI",97],["1","Gemini","AI",92],["2","ChatGPT","AI",50],["2","Claude","AI",60],["2","Gemini","AI",92],["3","ChatGPT","AI",60],["3","Claude","AI",55],["3","Gemini","AI",85]],
+    link: "https://huggingface.co/datasets/Kukedlc/suno-ai-music-dataset/blob/main/audio/5b53392d-228c-4571-9d95-53783dbea193.mp3" },
+  { truth: "AI", title: "The AI song that fooled the listener", who: "Suno v5 · dub techno, instrumental",
+    text: "Gemini, the only model that actually listens, called it <b>human in all three experiments</b>, at 75–85% confidence, praising its \"clean transients\" and \"standard DAW production\". ChatGPT and Claude only got it right because they say \"AI\" to almost everything once the tags are gone.",
+    v: [["1","ChatGPT","AI",99],["1","Claude","AI",97],["1","Gemini","Human",75],["2","ChatGPT","AI",58],["2","Claude","AI",62],["2","Gemini","Human",85],["3","ChatGPT","AI",62],["3","Claude","AI",57],["3","Gemini","Human",75]],
+    link: "https://huggingface.co/datasets/Kukedlc/suno-ai-music-dataset/blob/main/audio/e631a5db-5777-45ad-b018-845707fa8202.mp3" },
+  { truth: "Human", title: "The human song accused of being AI", who: "raja_ffm · the heartstring (2012, CC BY-NC)",
+    text: "Released years before AI music generators existed, yet called AI <b>10 of 12 times</b> once its tags were removed. Gemini heard \"phasey vocal smearing\" at 85%. In the side test it was played at full quality and <b>all three still called it AI</b>.",
+    v: [["1","ChatGPT","Human",96],["1","Claude","Human",93],["1","Gemini","Human",75],["2","ChatGPT","AI",51],["2","Claude","AI",58],["2","Gemini","AI",85],["3","ChatGPT","AI",58],["3","Claude","AI",55],["3","Gemini","AI",85],["4","ChatGPT","Human",56],["4","Claude","Human",52],["4","Gemini","AI",85]],
+    link: "https://ccmixter.org/files/raja_ffm/38561" },
+  { truth: "Human", title: "The human song saved by its length", who: "groucho_marxx · Funky Lagos (2009, CC BY-NC)",
+    text: "A 9½-minute afro house track. In experiment 2 Claude called it human for one reason: <b>\"9:29 long, longer than a typical Suno or Udio generation\"</b>. Cut to a 30-second clip (experiment 3), the length was gone, and <b>both ChatGPT and Claude called it AI</b>.",
+    v: [["1","ChatGPT","Human",98],["1","Claude","Human",90],["1","Gemini","Human",95],["2","ChatGPT","AI",59],["2","Claude","Human",55],["2","Gemini","Human",88],["3","ChatGPT","AI",59],["3","Claude","AI",56],["3","Gemini","Human",50]],
+    link: "https://ccmixter.org/files/groucho_marxx/21597" },
+];
+document.getElementById("storybox").innerHTML = STORIES.map(s => `<article class="story">
+  <div class="head"><h3>${s.title}</h3><span class="tag ${s.truth === "AI" ? "ai" : "hu"}">${s.truth}</span></div>
+  <div class="who">${s.who}</div>
+  <div class="chips">${s.v.map(([e, m, v, c]) => `<span class="vchip ${v === s.truth ? "ok" : "bad"}" title="Experiment ${e}, ${m}: ${v} ${c}%">${e} · ${m} · ${v} ${c}%</span>`).join("")}</div>
+  <p>${s.text}</p>
+  <a class="listen" href="${s.link}" target="_blank" rel="noopener">Listen to the original ↗</a>
+</article>`).join("");
+</script>
 </body>
 </html>
